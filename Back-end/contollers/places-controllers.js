@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const HttpError = require("../models/http-error").HttpError
 
-const DUMMY_PLACES = [{
+let DUMMY_PLACES = [{
     id : "p1",
     title: "Sydney Opera House A",
     description : "One of the most famous buildings in the World",
@@ -72,7 +72,42 @@ const createPlace = (req,res,next) => {
     return res.status(201).json({createdPlace})
 }
  
+const updatePlaceById = (req,res,next) => {
+    console.log(`Here`)
+    const id = req.params.pid 
+    const{title, description} = req.body
+    // Finding the Place
+    const place = DUMMY_PLACES.find((place) => place.id == id)
+    // Creating an Immutable Copy
+    const placeCopy = {...place}
+
+    //Returning Index of Object Array
+    const placeId = DUMMY_PLACES.findIndex((place) => place.id == id)
+    console.log(placeId)
+
+    //Making Changes in the Object
+    placeCopy["title"] = title
+    placeCopy["description"] = description
+
+    //Swapping in DUMMY PLACES
+    DUMMY_PLACES[placeId] = placeCopy;
+    res.status(200).json({place : placeCopy})
+}
+
+const deletePlace = (req,res,next) => {
+    const id = req.params.pid
+    console.log(id)
+    //Deleting in a immutable way
+    const db = DUMMY_PLACES.filter((place) => place.id != id)
+    console.log(db)
+    DUMMY_PLACES = db;
+    console.log(DUMMY_PLACES)
+    res.status(200).json({message : "Delete Complete"})
+}
+
 
 exports.getPlace = getPlace;
 exports.getPlaceByUserId = getPlaceByUserId;
 exports.createPlace = createPlace; 
+exports.updatePlaceById = updatePlaceById; 
+exports.deletePlace = deletePlace; 

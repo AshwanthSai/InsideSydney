@@ -11,6 +11,7 @@ app.use(express.json())
 
 app.use("/places", router)
 
+/* Unsupported Route Handeller */
 app.use((req,res,next) => {
     //The below method will hang because it does not throw an error, 
     //return new HttpError("This route does not exist", 404)

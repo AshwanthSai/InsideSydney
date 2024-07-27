@@ -3,8 +3,6 @@ const router = express.Router();
 const HttpError = require("../models/http-error").HttpError
 const placesControllers = require("../contollers/places-controllers");
 
-
-
 //app.use("/places", router)
 //Fetch all places that belong to a User ID
 router.get("/user/:uid", placesControllers.getPlaceByUserId)
@@ -13,5 +11,7 @@ router.get("/user/:uid", placesControllers.getPlaceByUserId)
 router.get("/:pid",placesControllers.getPlace)
 
 router.post("/",placesControllers.createPlace)
+router.patch("/:pid",placesControllers.updatePlaceById)
+router.delete("/:pid",placesControllers.deletePlace)
 
 module.exports = router; 
