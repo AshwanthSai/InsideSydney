@@ -1,6 +1,8 @@
 const express = require("express")
 const app = express()
-const router = require("../Back-end/Routes/Places")
+const placesRouter = require("./routes/places-route")
+const usersRouter = require("./routes/users-route")
+
 const { HttpError } = require("./models/http-error")
 
 /* app.get("/", (req,res,next) => {
@@ -9,7 +11,8 @@ const { HttpError } = require("./models/http-error")
 
 app.use(express.json())
 
-app.use("/places", router)
+app.use("/places", placesRouter)
+app.use("/users", usersRouter)
 
 /* Unsupported Route Handeller */
 app.use((req,res,next) => {

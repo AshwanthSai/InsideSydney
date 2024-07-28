@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const HttpError = require("../models/http-error").HttpError
+const {validationResult} = require("express-validator");
 
 let DUMMY_PLACES = [{
     id : "p1",
@@ -57,6 +58,12 @@ const getPlaceByUserId = (req,res,next) => {
 
 
 const createPlace = (req,res,next) => {
+    const err = validationResult(req)
+    if(!err.isEmpty()){
+        console.log(`Here`)
+        throw new HttpError("Invalid Input", 422)
+    }
+    
     const {title, description, coordinates, address, creator} = req.body
     
     const createdPlace = {
@@ -73,7 +80,11 @@ const createPlace = (req,res,next) => {
 }
  
 const updatePlaceById = (req,res,next) => {
-    console.log(`Here`)
+    const err = validationResult(req)
+    if(!err.isEmpty()){
+        console.log(`Here`)
+        throw new HttpError("Invalid Input", 422)
+    }
     const id = req.params.pid 
     const{title, description} = req.body
     // Finding the Place
@@ -96,15 +107,15 @@ const updatePlaceById = (req,res,next) => {
 
 const deletePlace = (req,res,next) => {
     const id = req.params.pid
-    console.log(id)
+    const itemExists = DUMMY_PLACES.find((place) => place.id == id)
+    if(!itemExists){
+        throw new HttpError("Item does not exist")
+    }
     //Deleting in a immutable way
     const db = DUMMY_PLACES.filter((place) => place.id != id)
-    console.log(db)
     DUMMY_PLACES = db;
-    console.log(DUMMY_PLACES)
     res.status(200).json({message : "Delete Complete"})
 }
-
 
 exports.getPlace = getPlace;
 exports.getPlaceByUserId = getPlaceByUserId;
