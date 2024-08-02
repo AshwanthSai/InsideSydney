@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
 import './Backdrop.css';
 
 // Portal which renders before Drawer Hook in Index.HTML
