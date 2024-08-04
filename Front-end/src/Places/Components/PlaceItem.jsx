@@ -3,7 +3,7 @@ import { useState } from "react";
 import Card from "../../Shared/Components/UIElements/Card";
 import Modal from "./Modal";
 import "./PlaceItem.css"
-import Button from "../../Shared/Components/UIElements/Button"
+import Button from "../../Shared/Components/FormElements/Button"
 import Map from "../../Shared/Components/UIElements/Map";
 
 const PlaceItem = (props) => {
