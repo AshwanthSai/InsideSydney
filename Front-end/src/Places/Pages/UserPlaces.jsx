@@ -116,6 +116,17 @@ const DUMMY_PLACES = [
       lng: 55.2963 
     }, 
     creatorId: "u1", 
+  },{
+    id: "p11", 
+    title: "Mulla Periyar Dam", 
+    description: "Old Dam in India", 
+    imageUrl: "https://upload.wikimedia.org/wikipedia/en/9/93/Burj_Khalifa.jpg",
+    address: "G4HV+FPM, Periyar, Kerala 685532, India", 
+    location: { 
+      lat:77.14,
+      lng: 9.52
+    }, 
+    creatorId: "u1", 
   }
 ]
 

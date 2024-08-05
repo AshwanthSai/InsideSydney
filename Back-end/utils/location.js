@@ -6,6 +6,7 @@ const API = "AIzaSyCJpI2c3iNZD0oIyEbaBXd2uwidQ5ED1bc";
 
 async function getCordinates(location) {
     const result = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}=&key=${API}`)
+    /* Axios has an extra layer of Wrapping */
     const data = result.data
 
     if(!data || data.status == "ZERO_RESULTS"){
