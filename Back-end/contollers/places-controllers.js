@@ -3,7 +3,8 @@ const HttpError = require("../models/http-error").HttpError
 const {validationResult} = require("express-validator");
 const { getCordinates } = require('../utils/location');
 const Place = require('../models/places');
-
+const moongoose = require("mongoose");
+const User = require('../models/users');
 
 /* 
     /places/id -> Fetches particular id 
@@ -35,15 +36,22 @@ const getPlace = async(req,res,next) => {
 */
 const getPlaceByUserId = async (req,res,next) => {
     const userID = req.params.uid;
+    /*
+        One user has many places
+        Fetch the user and populate on places. 
+            Places will have all place items as array items.
+    */
 
     let result;
     try {
-        result = await Place.find({creator : userID})
+        result = await User.findById(userID).populate("places")
     } catch(err){
         const error = new HttpError("Something wrong, Cannot find user places", 404)
         return next(error)
     }
     
+    console.log(result)
+
     if(!result){
           throw new HttpError("Place for user not found", 404)
  
@@ -53,7 +61,9 @@ const getPlaceByUserId = async (req,res,next) => {
          // return res.status(404).json({message: "Place for user not found"})
      }
     // res.send("<h1>Handeller 2 instead of Handeller 1</h1>") 
-    res.status(201).json({result : result.map((item) => item.toObject({getters:true}))})
+
+
+    res.status(201).json({result : result.places.map((item) => item.toObject({getters:true}))})
 }
 
 const createPlace = async (req,res,next) => {
@@ -68,7 +78,7 @@ const createPlace = async (req,res,next) => {
     try {
         coordinates = await getCordinates(address)
     } catch(error) {
-        return next(error)
+        return next(new HttpError("Geocoding Failed"))
     }
 
 
@@ -76,19 +86,40 @@ const createPlace = async (req,res,next) => {
         title,
         description,
         image,
-        location : {
-            lat: req.body.location.lat,
-            lng : req.body.location.lng
-        }, 
+        location : coordinates,
         address, 
         creator
     })
 
+     /* 
+     Before saving, check if creator exists in DB.
+        Start a transaction
+            Save place
+            Save place ID into User.places array
+        Commit transaction
+     */
+
+    let user;
     try {
-        createdPlace.save()
+        user = await User.findById(creator)
     } catch(err) {
-        const error = new HttpError("Cannot Create Place", 500)
-        return next(error)
+        return next(new HttpError("Creating Place Failed", 500))
+    } 
+    
+    if(!user){
+        return next(new HttpError("Could not find user as a Creator", 404))
+    }
+
+    try {
+        const session = await moongoose.startSession()
+        session.startTransaction()
+        await createdPlace.save({session:session}) // Saving Place, passing Session.
+        user.places.push(createdPlace) // Creating a modified user
+        console.log(`Point`)
+        await user.save({session:session}) // Saving User, passing Session.
+        session.commitTransaction()
+    } catch(err) {
+        return next(new HttpError("Creating Place Failed, problem during transaction", 500))
     }
 
     return res.status(201).json(createdPlace)
@@ -132,20 +163,44 @@ const deletePlace = async(req,res,next) => {
     const id = req.params.pid
     // Checking if Place Exists 
     
+    /* 
+        Find user that belongs to Place
+            1. Use Populate on the Creator field within Places  
+    */
     let item; 
     try {
-        item = await Place.findById(id)
+        item = await Place.findById(id).populate("creator")
     } catch(err) {
-      return next(new HttpError("Item does not Exist", 404))
+        return next(new HttpError("Could not Delete Item"))
     }   
+    
+    if(!item){
+      return next(new HttpError("Item does not Exist", 404))
+    }
 
-    //Deleting from DB 
+    /* 
+        Start a Transaction
+            1. Delete Place
+            2. Remove Place ID from user using pull
+        Commit Transaction
+    */
+    console.log(item);
+    
     try {
-        console.log(item)
-        await item.deleteOne();
-    } catch(err){
-        return next(new HttpError("Something wrong, cannot remove item", 500))
-    }    
+        const session = await moongoose.startSession();
+        session.startTransaction()
+        await item.deleteOne({session : session})
+        console.log(`Point`) 
+        /* 
+            Remove User ID from places
+            This is not an array.pull method
+        */
+        item.creator.places.pull(item) 
+        await item.creator.save({session : session})
+        session.commitTransaction() 
+    } catch(err) {
+        return next(new HttpError("Something went wrong during Transaction", 500))
+    }
 
     res.status(200).json({message : "Delete Complete"})
 }
