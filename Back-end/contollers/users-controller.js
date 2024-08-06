@@ -1,65 +1,91 @@
 const { v4: uuidv4 } = require('uuid');
 const { HttpError } = require('../models/http-error');
-const{validationResult} = require("express-validator")
+const{validationResult} = require("express-validator");
+const User = require('../models/users');
 
-let DUMMY_USERS = [
-    {"name": "Sai", "email": "ashwanth.saie", "password": "5849048"},
-    {"name": "John", "email": "john.doe", "password": "123456"},
-    {"name": "Alice", "email": "alice.smith", "password": "abcdef"},
-    {"name": "Bob", "email": "bob.jones", "password": "qwerty"},
-    {"name": "Emily", "email": "emily.wilson", "password": "password123"}
-];
+const fetchUsers = async(req, res, next) => {
+    let users;
+    try {
+        users = await User.find({}, "-password")
+    } catch(err) {
+        return next(new HttpError("Could not fetch users from DB", 500))
+    }
 
-const fetchUsers = (req, res, next) => {
-    res.status(200).json(DUMMY_USERS)
+    /* This fails because the Result is an Array and you have to Map */
+    // res.status(200).json({users : users.toObject({getters:true})})
+    console.log(users)
+    res.status(200).json({users : users.map(user => user.toObject({getters:true}))})
 }
 
 /* /POST to Sign UP */
-const signUp = (req, res, next) => {
+const signUp = async(req, res, next) => {
 
     const err = validationResult(req)
     if(!err.isEmpty()){
-        console.log(`Here`)
-        throw new HttpError("Invalid Input", 422)
+        return next(new HttpError("Invalid Input", 422))
     }
     
-    const {name, email, password} = req.body
+    /* 
+       We no longer accept places from user,
+       that was Aux until we, start implementing relationships
+    */
 
-    const userExists = DUMMY_USERS.find(user => user.email == email)
+    const {name, email, password, image} = req.body
+
+    let userExists;
+
+    try {
+        userExists = await User.findOne({email : email})
+    } catch(err) {
+        return next(new HttpError("Unable to check if user exists", 500))
+    }
+
     if(userExists) {
-        throw new HttpError("User already exists", 422)
+        return next(new HttpError("User already exists", 422))
     }
 
-    const newUser = {
-        id : uuidv4(),
+    const newUser = new User({
         name, 
-        email, 
-        password
+        email,
+        password, 
+        image, 
+        /* 
+            Create an array in places field,
+            which we will populate later.
+         */
+        places: []
+    })
+
+    try {
+       await newUser.save()
+    } catch(err) {
+        return next(new HttpError("Unable to Save User Info", 500))
     }
-    DUMMY_USERS.push(newUser)
+
     //201 - Items Created
-    res.status(201).json(newUser)
+    res.status(201).json({newUser:newUser.toObject({getters:true})})
 }
 
-/* POST to login In */
-const login = (req, res, next) => {
+/* POST to Login */
+const login = async(req, res, next) => {
     const err = validationResult(req)
     if(!err.isEmpty()){
-        console.log(`Here`)
-        throw new HttpError("Invalid Input", 422)
+        return next(new HttpError("Invalid Input", 422))
     }
 
     const {email, password} = req.body
-    const userExist = DUMMY_USERS.findIndex(user => user.email == email)
-    if(userExist >= 0){
-        const passwordMatched = (DUMMY_USERS[userExist].password === password) ? true : false;
-        if(passwordMatched) {
-            res.status(200).json({message : "User Exists"})
-        } else {
-            throw new HttpError("User Does not Exist", 401)
-        }
+    
+    let userExist;
+    try {
+         userExist = await User.findOne({email:email})
+    } catch(err) {
+        return next(new HttpError("Loggin in Failed", 500))
+    }
+
+    if(!userExist || userExist.password !== password){
+        return next(new HttpError("Invalid Credentials", 401))
     } else {
-        throw new HttpError("User Does not Exist", 401)
+        res.status(200).json({message : "Logged In"})
     }
 }
 

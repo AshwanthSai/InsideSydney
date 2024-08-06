@@ -8,7 +8,7 @@ const usersSchema = new Schema({
     password: {type: String, required : true, minlength : 6},
     image: {type: String, required : true},
     /* We will link to Places Table Later */
-    places: {type: String, required : true},
+    places: [{type: mongoose.Types.ObjectId, required : true, ref: "Place"}],
 });
 
 /* 
@@ -17,4 +17,5 @@ const usersSchema = new Schema({
 */
 usersSchema.plugin(uniqueValidator)
 
+/* We use User as Ref */
 module.exports = mongoose.model("User", usersSchema)
