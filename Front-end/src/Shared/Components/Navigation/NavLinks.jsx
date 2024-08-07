@@ -7,7 +7,7 @@ const NavLinks = (props) => {
     <ul className = "nav-links">
         <li><NavLink to ="/" exact>ALL USERS</NavLink></li>
         <li><NavLink to ="/placeholder/places">My Places</NavLink></li>
-        <li><NavLink to ="/newPlaces">Add Place</NavLink></li>
+        <li><NavLink to ="places/new">Add Place</NavLink></li>
         <li><NavLink to ="/auth">Authenticate</NavLink></li>
     </ul>
   )

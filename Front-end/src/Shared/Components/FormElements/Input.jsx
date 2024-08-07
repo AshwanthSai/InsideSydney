@@ -6,6 +6,10 @@ const inputReducer = (state, action) => {
     switch(action.type) {
         case "CHANGE" : 
             return {...state, 
+                /* 
+                    Overall validation of our individual component
+                    Is doing using this aux validate function.
+                */
                 value : action.value, isValid: validate(action.value, action.validators)
             }
         case "TOUCHED" : 
@@ -16,8 +20,15 @@ const inputReducer = (state, action) => {
 }
 
 const Input = (props) => {
-    const[inputState,dispatch] = useReducer(inputReducer, {value:"", isTouched: false, isValid:false})
+    const[inputState,dispatch] = useReducer(inputReducer,
+        {
+            value: props.value || "", 
+            isTouched: false, 
+            isValid: props.validity || ""
+        }
+    )
     
+    /* Change in Input, Push to Store */
     const changeHandler = (event) => {
         dispatch({type : "CHANGE",
              value : event.target.value,
@@ -25,7 +36,9 @@ const Input = (props) => {
             }
         )
     }
-
+    /* 
+        For not showing an error the first time.
+    */
     const blurHandler = (event) => {
         dispatch({type : "TOUCHED",
             isTouched : true
@@ -52,6 +65,7 @@ const Input = (props) => {
     const{id, onInput} = props
     const{value,isValid} = inputState
 
+    /* On change in Store value, pass to parent */
     useEffect(() => {
         onInput(id, value, isValid)
     }, [onInput,value,isValid])
