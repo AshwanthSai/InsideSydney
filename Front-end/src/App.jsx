@@ -4,6 +4,7 @@ import Users from './Users/Pages/Users';
 import MainNavigation from './Shared/Components/Navigation/MainNavigation';
 import UserPlaces from "./Places/Pages/UserPlaces"
 import UpdatePlaces from './Places/Pages/UpdatePlaces';
+import Authenticate from './Users/Pages/Authenticate';
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
       </Route>
       <Route path = "/places/:placeId" exact> 
           <UpdatePlaces/>
+      </Route>
+      <Route path = "/auth" exact> 
+          <Authenticate/>
       </Route>
       <Redirect to = "/"/>  
     </Switch>

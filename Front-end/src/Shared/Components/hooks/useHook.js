@@ -1,9 +1,7 @@
 import React, { useCallback, useReducer } from "react";
 
 /*
- Copy in Reducer function
- Copy in Handler
- Copy UseReducer and make it dynamic.
+
 */
 
 const formReducer = (state, action) => {
@@ -44,6 +42,13 @@ const formReducer = (state, action) => {
         /* Entire Form Validity */
           isValid : formIsValid
         }
+
+      case "SET_DATA": 
+        return {
+          inputs : action.inputs,
+          isValid : action.formIsValid
+        }
+      /* If action does not match, Return old state */
       default : 
         return {...state}
     }
@@ -64,14 +69,22 @@ const useForm = (InitialInput, InitialValidity) => {
       Value changed in input, 
       Push to Global Store and 
       Recompute Global Validity.
-   */
+    */
     const inputHandler = useCallback((id, value, isValid) => {
         const eventType = "INPUT_CHANGE"
         const inputID = id
         dispatch({type: eventType, inputID, value, isValid})
     },[]);
 
-  return [formState, inputHandler];
+
+    /* To set once, network request is resolved */
+    const setFormData =  useCallback((inputData, formValidity) => {
+      const eventType = "SET_DATA"
+      dispatch({eventType, inputs : inputData, formIsValid : formValidity})
+    },[])
+  
+  //Returning Initial State and Set Method for our Custom Hook
+  return [formState, inputHandler, setFormData];
 };
 
 export default useForm;

@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 import Input from "../../Shared/Components/FormElements/Input";
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from "../../Shared/Utils/validators";
 import "./Place-form.css"
 import Button from "../../Shared/Components/FormElements/Button";
 import useForm from "../../Shared/Components/hooks/useHook";
+import Card from "../../Shared/Components/UIElements/Card";
+
 
 const DUMMY_PLACES = [
     { 
@@ -129,41 +131,83 @@ const DUMMY_PLACES = [
         lng: 9.52
       }, 
       creatorId: "u1", 
-    }
+    } 
 ]
 
 const UpdatePlaces = (props) => {
+  console.clear()
   const placeId = useParams().placeId;
-  const identifiedPlace = DUMMY_PLACES.find(p => p.id === placeId);
-  
-  const [formState, inputHandler] = useForm({
-    title : {
-        value: identifiedPlace.title,
-        isValid: false
-      }, 
-      description : {
-        value: identifiedPlace.description,
-        isValid: false
+  const[isLoading, setIsLoading] = useState(true)
+  /*
+   What if the network request comes late
+   We cannot initialize a hook in a fetch block
+   So we will create an UpdatePlace method for useForm
+   Initialize with dummy values and then update them.
+  */
+ 
+ const [formState, inputHandler, setFormData] = useForm({
+   title : {
+     value: "",
+     isValid: true
+    }, 
+    description : {
+      value: "",
+      isValid: true
     }
-  }, true)
+  }, false)
+  
+  const identifiedPlace = DUMMY_PLACES.find(p => p.id === placeId);
+  /*
+    If you set the form directly
+    useForm will internally update its State.
+    Since the state returned is updated, this page reloads.
+    Again, calling setForm into a while loop.
 
+  */
+
+ useEffect(() => {
+   if(identifiedPlace) {
+    setFormData({
+      title : {
+        value: identifiedPlace.title ,
+        isValid: true
+       }, 
+       description : {
+         value: identifiedPlace.description,
+         isValid: true
+       }
+     }, true)
+    }
+    setIsLoading(false)
+ }, [setFormData, identifiedPlace])
+ 
 
   if(!identifiedPlace){
     return (
         <div className = "center">
-            <h2>Could not find place!</h2>
+          <Card>
+              <h2>Could not find place!</h2>
+          </Card>
         </div>
     )
   }
-
 
   const placeSubmitHandler = (event) => {
     event.preventDefault()
     console.log(formState)
   }
 
+
+  if(isLoading) {
+    return (
+      <div className="center">
+        <h1>Loading...</h1>
+      </div>
+    ) 
+  } 
+  
   return (
-    <form class = "place-form " onSubmit = {placeSubmitHandler}>
+    <form className = "place-form " onSubmit = {placeSubmitHandler}>
         <Input 
             element="input" 
             id= "Title"
@@ -173,8 +217,10 @@ const UpdatePlaces = (props) => {
             onInput = {inputHandler}
             errorText = "Please enter a valid title"
             value = {formState.inputs.title.value}
-            validity = {true}
+            validity = {formState.inputs.title.validity}
             />
+         {console.log("Here")}
+      
         <Input 
             element="textarea" 
             id= "Description"
@@ -184,7 +230,7 @@ const UpdatePlaces = (props) => {
             onInput = {inputHandler}
             errorText = "Please enter a longer address"
             value = {formState.inputs.description.value}
-            validity = {true}
+            validity = {formState.inputs.description.validity}
             /> 
         <Button type = "submit"  onClick = {placeSubmitHandler}>
             Update Place
@@ -192,7 +238,5 @@ const UpdatePlaces = (props) => {
     </form>
   );
 };
-
-
 
 export default UpdatePlaces;

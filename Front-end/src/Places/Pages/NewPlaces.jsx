@@ -23,14 +23,24 @@ const NewPlaces = () => {
       }, 
   }, true);
 
+  /*
+    Input internally uses a UseReducer. On input change, a useEffect
+    is Run and data is passed up to parent via the prop function.
+    The prop function is again passed as prop to Child.
+    To prevent an While loop. We memoize, the inputHandler Function 
+    within useForm().
+  */
+
   return (
     <form className="place-form">
+      {/* All input is passed to Input Handler within useForm*/}
       <Input 
         element="input" 
         id= "Title"
         type="text" 
         label="Title" 
         validators = {[VALIDATOR_REQUIRE()]}
+      
         onInput = {inputHandler}
         errorText = "Please enter a valid title"
         />
@@ -53,6 +63,7 @@ const NewPlaces = () => {
         errorText = "Please enter a longer address"
         />
       <Button type = "submit" 
+        // If entire form state is inValid then, disable form
         disabled = {!formState.isValid}>
         Submit 
       </Button>
