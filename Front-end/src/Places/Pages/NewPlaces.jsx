@@ -5,7 +5,12 @@ import {VALIDATOR_MINLENGTH, VALIDATOR_REQUIRE} from "../../Shared/Utils/validat
 import Button from "../../Shared/Components/FormElements/Button"
 import useForm from "../../Shared/Components/hooks/useHook";
 
-
+  /* 
+    NewPlaces
+      > useForm for Overall State Validation
+      > Input for Single Field Validation
+        > Single Validation via aux within Validate.Js 
+  */
 
 const NewPlaces = () => {
   const[formState, inputHandler] = useForm({
@@ -40,7 +45,6 @@ const NewPlaces = () => {
         type="text" 
         label="Title" 
         validators = {[VALIDATOR_REQUIRE()]}
-      
         onInput = {inputHandler}
         errorText = "Please enter a valid title"
         />

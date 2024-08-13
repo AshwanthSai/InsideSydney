@@ -1,6 +1,11 @@
 import React from "react";
 import UserList from "../Components/UsersList";
 
+/* 
+ ! User Page
+ !  > User List
+ !    > UserItem
+*/
 const Users = () => {
   const USERS =    [ {
     id: 'u1',

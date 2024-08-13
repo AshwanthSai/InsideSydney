@@ -156,14 +156,14 @@ const UpdatePlaces = (props) => {
     }
   }, false)
   
-  const identifiedPlace = DUMMY_PLACES.find(p => p.id === placeId);
   /*
-    If you set the form directly
-    useForm will internally update its State.
-    Since the state returned is updated, this page reloads.
-    Again, calling setForm into a while loop.
-
+  If you set the form directly
+  useForm will internally update its State.
+  Since the state returned is updated, this page reloads.
+  Again, calling setForm into a while loop.
+  
   */
+ const identifiedPlace = DUMMY_PLACES.find(p => p.id === placeId);
 
  useEffect(() => {
    if(identifiedPlace) {
@@ -219,8 +219,6 @@ const UpdatePlaces = (props) => {
             value = {formState.inputs.title.value}
             validity = {formState.inputs.title.validity}
             />
-         {console.log("Here")}
-      
         <Input 
             element="textarea" 
             id= "Description"

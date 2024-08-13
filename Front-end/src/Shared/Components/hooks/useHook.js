@@ -1,7 +1,15 @@
 import React, { useCallback, useReducer } from "react";
 
-/*
+/* 
+  Idea behind Form Hook is to 
+  Check validity of entire Inputs
 
+  Internally uses Reducer for two way binding.
+    Child sends parent value and validity
+    We pass back state as value to input.
+
+    UseForm uses UseReducer for Entire form (All Inputs)
+      Input uses UseReducer for Entire Input
 */
 
 const formReducer = (state, action) => {

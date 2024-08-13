@@ -4,6 +4,12 @@ import PlaceList from "../Components/PlaceList";
 import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 
+/* 
+  ! Places
+  !   >   Place List
+  !       >  Place Item
+*/
+
 const DUMMY_PLACES = [
   { 
     id :  "p1", 

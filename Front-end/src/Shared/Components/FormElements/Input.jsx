@@ -8,7 +8,7 @@ const inputReducer = (state, action) => {
             return {...state, 
                 /* 
                     Overall validation of our individual component
-                    Is doing using this aux validate function.
+                    Is doing using this aux validate function within Validation.js
                 */
                 value : action.value, isValid: validate(action.value, action.validators)
             }
@@ -65,7 +65,7 @@ const Input = (props) => {
     const{id, onInput} = props
     const{value,isValid} = inputState
 
-    /* On change in Store value, pass to parent */
+    /* On input pass to parent */
     useEffect(() => {
         onInput(id, value, isValid)
     }, [onInput,value,isValid])
@@ -79,7 +79,5 @@ const Input = (props) => {
     </div>
     );
 };
-
-
 
 export default Input;
