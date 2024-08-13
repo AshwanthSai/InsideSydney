@@ -40,6 +40,9 @@ const getPlaceByUserId = async (req,res,next) => {
         One user has many places
         Fetch the user and populate on places. 
             Places will have all place items as array items.
+
+        Populate fetches records of Particular ID from all tables
+        and Merges them together in a Single Object
     */
 
     let result;
@@ -114,6 +117,7 @@ const createPlace = async (req,res,next) => {
         const session = await moongoose.startSession()
         session.startTransaction()
         await createdPlace.save({session:session}) // Saving Place, passing Session.
+        // Internal Mongoose Method, not array push below.
         user.places.push(createdPlace) // Creating a modified user
         console.log(`Point`)
         await user.save({session:session}) // Saving User, passing Session.

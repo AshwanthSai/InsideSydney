@@ -22,10 +22,7 @@ app.use((req,res,next) => {
 })
 
 /* Default Error Handler */
-
-
 app.use((err,req,res,next) => {
-    console.log(`Here`)
     if(res.headerSent){
         // We have already acknowledged the error
         return next(err)
@@ -37,7 +34,7 @@ app.use((err,req,res,next) => {
 
 /*
     Here, 
-    is the name of the collection
+    the name of the collection
     is InsideSydney
     after .net/
 */
