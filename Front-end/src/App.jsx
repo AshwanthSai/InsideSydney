@@ -16,10 +16,12 @@ function App() {
     It will reset the Global State
   */
   const logIn = useCallback(()=> {
+    console.log("Logged In")
     setIsLoggedIn(true)
   }, [])
   
   const logOut = useCallback(() => {
+    console.log("Logged Out")
     setIsLoggedIn(false)
   },[])
   
