@@ -4,6 +4,7 @@ const{validationResult} = require("express-validator");
 const User = require('../models/users');
 
 const fetchUsers = async(req, res, next) => {
+    console.log("Fetch Users Hit")
     let users;
     try {
         users = await User.find({}, "-password")
@@ -19,7 +20,7 @@ const fetchUsers = async(req, res, next) => {
 
 /* /POST to Sign UP */
 const signUp = async(req, res, next) => {
-
+    console.log("Sign Up Hit")
     const err = validationResult(req)
     if(!err.isEmpty()){
         return next(new HttpError("Invalid Input", 422))
@@ -48,7 +49,7 @@ const signUp = async(req, res, next) => {
         name, 
         email,
         password, 
-        image, 
+        image : "test", 
         /* 
             Create an array in places field,
             which we will populate later.
@@ -68,6 +69,7 @@ const signUp = async(req, res, next) => {
 
 /* POST to Login */
 const login = async(req, res, next) => {
+    console.log("Login Route Hit")
     const err = validationResult(req)
     if(!err.isEmpty()){
         return next(new HttpError("Invalid Input", 422))
@@ -79,7 +81,7 @@ const login = async(req, res, next) => {
     try {
          userExist = await User.findOne({email:email})
     } catch(err) {
-        return next(new HttpError("Loggin in Failed", 500))
+        return next(new HttpError("Logging in Failed", 500))
     }
 
     if(!userExist || userExist.password !== password){

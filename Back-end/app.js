@@ -4,12 +4,15 @@ const placesRouter = require("./routes/places-route")
 const usersRouter = require("./routes/users-route")
 const mongo =  require("mongoose")
 const { HttpError } = require("./models/http-error")
+var cors = require('cors')
 
 /* app.get("/", (req,res,next) => {
     res.json({"name" : "Sai"})
 }) */
 
 app.use(express.json())
+app.use(cors())
+
 
 app.use("/places", placesRouter)
 app.use("/users", usersRouter)
@@ -41,7 +44,12 @@ app.use((err,req,res,next) => {
 mongo.connect("mongodb+srv://ashwanthsaie:insideSydney123@insidesydney.e5fhyis.mongodb.net/InsideSydney?retryWrites=true&w=majority&appName=insideSydney")
 .then(() => {
         console.log("Connected to DB")
-        app.listen(5211)
+        try {
+            app.listen(4000)
+            console.log("Server Running")
+        } catch(err){
+            console.log(err)
+        }
     }
 ).catch(() => {
     console.log("Cannot connect to DB")

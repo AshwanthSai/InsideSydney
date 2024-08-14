@@ -8,7 +8,7 @@ router.get("/", usersControllers.fetchUsers)
 router.post("/signup", 
     [
         check("name").not().isEmpty(),
-        check("email").isEmail().isLength({ min: 18 }),
+        check("email").isEmail().isLength({ min: 9 }),
         check('password').not().isEmpty(),
 
     ],    
