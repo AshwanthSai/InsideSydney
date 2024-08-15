@@ -11,18 +11,21 @@ import { useCallback, useState } from 'react';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [uid, setUserId] = useState("")
   /*
     For each route switch, you do not want to re-initiate the function,
     It will reset the Global State
   */
-  const logIn = useCallback(()=> {
+  const logIn = useCallback((uid)=> {
     console.log("Logged In")
     setIsLoggedIn(true)
+    setUserId(uid)
   }, [])
   
   const logOut = useCallback(() => {
     console.log("Logged Out")
     setIsLoggedIn(false)
+    setUserId(null)
   },[])
   
   let routes;
@@ -74,7 +77,7 @@ function App() {
 
   return (
     /* Binding our global states to context */
-    <AuthContext.Provider value = {{isLoggedIn, logIn, logOut}}>
+    <AuthContext.Provider value = {{isLoggedIn, userId : uid, logIn, logOut}}>
       <BrowserRouter>
       <MainNavigation/>
       <main>

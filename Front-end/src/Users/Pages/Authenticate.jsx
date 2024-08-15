@@ -8,16 +8,15 @@ import AuthContext from "../../Shared/Context/AuthContext";
 import "./Authenticate.css"
 import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
 import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
+import useHttpClient from "../../Shared/Components/hooks/http-hook";
+import { useHistory } from "react-router-dom"; 
 
 
 const Authenticate = (props) => {
-    const {logIn, logOut} = useContext(AuthContext)
+    const {userId, logIn, logOut} = useContext(AuthContext)
     const [isLogedInMode, setisLogedInMode] = useState(true);
     // For Loading spinner.
-    const[isLoading, setisLoading] = useState(false);
     /* For Modal */
-    const[error, setError] = useState(false);
-
     const[formState, inputHandler, setFormState] = useForm({
             email: {
                 value : "",
@@ -27,61 +26,45 @@ const Authenticate = (props) => {
                 value : "",
                 isValid: false
             }, 
-        }, true);
+    }, true);
+
+    const {isLoading, error, sendRequest, clearError} = useHttpClient();
+    const navigate = useHistory();
 
     const authSubmitHandler = async(e) => {
         console.log("Click Registered")
         e.preventDefault()
-        /* Sign Up Mode */
-        setisLoading(true)
+        
+        /* Sign Up Mode */      
         if(!isLogedInMode) { 
             try{
-                const response = await fetch(`http://localhost:4000/users/signup`, {
-                method : "POST",
-                headers: {"Content-Type" : "application/json"},
-                body : JSON.stringify({
+                const responseData = await sendRequest(`http://localhost:4000/users/signup`,"POST", JSON.stringify({
                     name : formState.inputs.name.value,
                     email : formState.inputs.email.value,
                     password : formState.inputs.password.value,
-                    })
-                })
-                if (!response.ok) {
-                    // Handle non-2xx HTTP responses
-                    throw new Error('Failed to sign up');
-                } 
-                const responseData = await response.json();
-                console.log(responseData)
-                setisLoading(false)
-                logIn()
+                }), {"Content-Type" : "application/json"})
+                
+                // We are pulling out the User Id from the response of Login Data
+                logIn(responseData.newUser.id)
+                navigate.push("/") 
             } catch(err) {
-                setisLoading(false)
-                setError(err.message || "Something went wrong, please try again" )
+                /* All states are passed to Error above, we do not need to explicitly do anything */
                 console.log(err)
             }
         } else {
             /* Login Mode */
             try{
-                setisLoading(true)
-                const response = await fetch(`http://localhost:4000/users/login`, {
-                method : "POST",
-                headers: {"Content-Type" : "application/json"},
-                body : JSON.stringify({
+                const responseData = await sendRequest(`http://localhost:4000/users/login`,"POST", JSON.stringify({
                     email : formState.inputs.email.value,
                     password : formState.inputs.password.value,
-                    })
-                })
-                if (!response.ok) {
-                    // Handle non-2xx HTTP responses
-                    throw new Error('Failed to sign in');
-                } 
-                const responseData = await response.json();
-                console.log(responseData)
-                logIn()
-                setisLoading(false)
+                }), {"Content-Type" : "application/json"})
+                console.log(error)
+                console.log(responseData.userExist.id)
+                logIn(responseData.userExist.id)
+                navigate.push("/") 
             } catch(err) {
+                console.log(error)
                 console.log(err)
-                setisLoading(false)
-                setError(err.message || "Invalid Credentials, please try again" )
             }
         }
     }    
@@ -92,12 +75,6 @@ const Authenticate = (props) => {
         When you switch to login, it should be removed from FormState 
         or will affect overall Form Validity
     */
-
-    const errorHandler = () => {
-        /* Because the Modal shows only when and error object exists */
-        setError(null)
-    }
-    
     const switchModeHandler = () => {
         if(isLogedInMode) {
             /* Remove name input from formState.inputs */
@@ -112,7 +89,7 @@ const Authenticate = (props) => {
 
     return(
         <>
-            <ErrorModal error = {error} onClear = {errorHandler} />
+            <ErrorModal error = {error} onClear = {clearError} />
             <Card className="authentication">   
                 {isLogedInMode ? (<h2> Log In </h2>) : (<h2> Sign Up </h2>)}
                 <hr/>

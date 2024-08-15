@@ -169,7 +169,7 @@ const UpdatePlaces = (props) => {
    if(identifiedPlace) {
     setFormData({
       title : {
-        value: identifiedPlace.title ,
+        value: identifiedPlace.title,
         isValid: true
        }, 
        description : {
@@ -194,7 +194,8 @@ const UpdatePlaces = (props) => {
 
   const placeSubmitHandler = (event) => {
     event.preventDefault()
-    console.log(formState)
+
+    
   }
 
 

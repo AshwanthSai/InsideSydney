@@ -2,8 +2,10 @@ import React from 'react';
 
 import UserItem from './UserItem';
 import './UsersList.css';
+import useHttpClient from '../../Shared/Components/hooks/http-hook';
 
-const UsersList = props => {
+
+const UsersList = props => {  
   if (props.users.length === 0) {
     return (
       <div className="center">
