@@ -30,7 +30,6 @@ const UserPlaces = () => {
         console.log(userId)
         const filteredPlaces = await sendRequest(`http://localhost:4000/places/user/${userId}`)
         setLoadedPlaces(filteredPlaces.result)
-        console.log(filteredPlaces.result)
       } catch (err) {}
     }
     request();
