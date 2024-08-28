@@ -10,6 +10,10 @@ import useHttpClient from "../../Shared/Components/hooks/http-hook";
 import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
 import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
 import AuthContext from "../../Shared/Context/AuthContext";
+<<<<<<< HEAD
+=======
+
+>>>>>>> 41fe1600a988a9f438ad1e0d3bc6283d6c61e714
 
 const UpdatePlaces = (props) => {
   const placeId = useParams().placeId;
@@ -17,7 +21,10 @@ const UpdatePlaces = (props) => {
   const[identifiedPlace, setIdentifiedPlace] = useState()
   const history = useHistory();
   const{userId} = useContext(AuthContext)
+<<<<<<< HEAD
   
+=======
+>>>>>>> 41fe1600a988a9f438ad1e0d3bc6283d6c61e714
   /*
   setFormData -  
    What if the network request comes late
