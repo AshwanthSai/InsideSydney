@@ -1,20 +1,28 @@
 import React, { useContext } from "react";
 import { useState } from "react";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import Card from "../../Shared/Components/UIElements/Card";
 import Modal from "./Modal";
 import "./PlaceItem.css"
 import Button from "../../Shared/Components/FormElements/Button"
 import Map from "../../Shared/Components/UIElements/Map";
 import AuthContext from "../../Shared/Context/AuthContext";
+import useHttpClient from "../../Shared/Components/hooks/http-hook";
+import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
+import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
 
 const PlaceItem = (props) => {
-  const {isLoggedIn} = useContext(AuthContext);
+  console.log(props)
+  const {isLoggedIn,userId} = useContext(AuthContext);
   //To Render Map.
   const [showMap, setShowMap] = useState(false);
   const openMapHandler = () => setShowMap(true);
   const closeMapHandler = () => setShowMap(false);
+  const {isLoading, error, sendRequest, clearError} = useHttpClient();
+
   /*Confirmation Modal State*/
   const[showConfirmModal, setShowConfirmModal] = useState(false)
+  
 
   // Delete -> Show Modal
   const showDeleteWarningHandler = () => {
@@ -26,14 +34,29 @@ const PlaceItem = (props) => {
     setShowConfirmModal(false)
   }
 
+  /*
+    Only show edit and delete, if you are the owner. I need to add this logic to the 
+    Backend and Front End
+  */
+
+
   // Delete -> Yes
   const confirmDeleteHandler = () => {
-    console.log("ITEM Deleted")
     setShowConfirmModal(false)
+    try {
+     const deleteItem = async() => {
+        const response = await sendRequest(`http://localhost:4000/places/${props.id}`, "DELETE")
+        props.onDelete(props.id)
+
+      }
+      deleteItem() 
+    } catch (error){} 
   }
 
   return (
     <React.Fragment>
+      <ErrorModal error = {error} onClear = {clearError} />
+
     {/* Modal for Maps */}
       <Modal 
         //To render backdrop
@@ -58,11 +81,11 @@ const PlaceItem = (props) => {
         footerClass = "place-item__modal-actions"
         footer = {
           <React.Fragment>
-            <Button inverse onClick = {() => cancelDeleteWarningHandler()}>CANCEL</Button>
-            <Button danger onClick = {() => confirmDeleteHandler()}>DELETE</Button>
+              <Button inverse onClick = {() => cancelDeleteWarningHandler()}>CANCEL</Button>
+              <Button danger onClick = {() => confirmDeleteHandler()}>DELETE</Button>
           </React.Fragment>
         }
-      >
+        >
         <p>
           Do you want to proceed and delete this place ?
           Please note that it cannot be undone thereafter.
@@ -71,6 +94,7 @@ const PlaceItem = (props) => {
         {/* Each place as card item */}
         <li className="place-item">
             <Card className= "place-item__content">
+                {isLoading && <LoadingSpinner asOverlay/>} 
                 <div className="place-item__image">
                     <img src={props.image} alt = {props.title}/>
                 </div>
@@ -81,8 +105,8 @@ const PlaceItem = (props) => {
                 </div>
                 <div className = "place-item__actions">
                   <Button inverse onClick = {openMapHandler}>View on Map</Button>
-                 {isLoggedIn && <Button to={`/places/${props.id}`}>Edit</Button>}
-                 {isLoggedIn && <Button danger onClick = {() => showDeleteWarningHandler()}>DELETE</Button>}
+                 {isLoggedIn && props.creatorId === userId && <Button to={`/places/${props.id}`}>Edit</Button>}
+                 {isLoggedIn && props.creatorId === userId && <Button danger onClick = {() => showDeleteWarningHandler()}>DELETE</Button>}
                 </div>
             </Card>
         </li>

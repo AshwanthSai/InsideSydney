@@ -47,15 +47,13 @@ const NewPlaces = () => {
   const placeSubmitHandler = async(e) => {
     e.preventDefault()
     try {
-      const responseData = await sendRequest("http://localhost:4000/place","POST", JSON.stringify({
+      const responseData = await sendRequest("http://localhost:4000/places/new","POST", JSON.stringify({
         title : formState.inputs.title.value,
         description : formState.inputs.description.value,
         address : formState.inputs.address.value,
         creator : userId,
       }), {"Content-Type" : "application/json"})
-      
-     console.log(responseData)
-     navigate.push("/")
+       navigate.push("/")
     } catch(error){
 
     }

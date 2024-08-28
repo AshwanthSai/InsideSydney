@@ -20,7 +20,7 @@ const useHttpClient = () => {
             const response = await fetch(url, {
                 method, headers, body, signal : controller.signal
             })
-            
+
             /* Consumed Response will not have an Okay */
             
             if (!response.ok) {

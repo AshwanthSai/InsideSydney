@@ -9,7 +9,7 @@ import AuthContext from "../../Shared/Context/AuthContext";
 
 
 /* 
-  ! Places
+  ! User Places
   !   >   Place List
   !       >  Place Item
 */
@@ -35,6 +35,11 @@ const UserPlaces = () => {
     request();
   }, [sendRequest, userId])
 
+  const deleteItem = (deletedPlaceId) => {
+    setLoadedPlaces((previousLoadedPlaces) => 
+       previousLoadedPlaces.filter((place) => place.id !== deletedPlaceId))
+  }
+
   return (
           <>
             <ErrorModal error = {error} onClear = {clearError} />
@@ -43,7 +48,7 @@ const UserPlaces = () => {
                   <LoadingSpinner asOverlay/>
                 </div>)
               }
-            {!isLoading && loadedPlaces && <PlaceList places = {loadedPlaces}/>}
+            {!isLoading && loadedPlaces && <PlaceList places = {loadedPlaces} onDelete = {deleteItem} />}
           </>  
         )
 };

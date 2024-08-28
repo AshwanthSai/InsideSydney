@@ -76,7 +76,7 @@ function App() {
 
 
   return (
-    /* Binding our global states to context */
+    /* Binding our global state variables to context */
     <AuthContext.Provider value = {{isLoggedIn, userId : uid, logIn, logOut}}>
       <BrowserRouter>
       <MainNavigation/>

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom/cjs/react-router-dom.min";
 import Input from "../../Shared/Components/FormElements/Input";
 import { VALIDATOR_REQUIRE, VALIDATOR_MINLENGTH } from "../../Shared/Utils/validators";
 import "./Place-form.css"
@@ -9,11 +9,15 @@ import Card from "../../Shared/Components/UIElements/Card";
 import useHttpClient from "../../Shared/Components/hooks/http-hook";
 import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
 import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
+import AuthContext from "../../Shared/Context/AuthContext";
 
 const UpdatePlaces = (props) => {
   const placeId = useParams().placeId;
   const {isLoading, error, sendRequest, clearError} = useHttpClient();
   const[identifiedPlace, setIdentifiedPlace] = useState()
+  const history = useHistory();
+  const{userId} = useContext(AuthContext)
+  
   /*
   setFormData -  
    What if the network request comes late
@@ -88,20 +92,25 @@ const UpdatePlaces = (props) => {
     placesControllers.updatePlaceById) 
   */
 
+  /*
+   We send the Form State data because this store
+   handles change to Place Information
+   Identified Place is only for Form Population
+  */
   const placeSubmitHandler = (event) => {
     event.preventDefault()
-    console.log(`Here`)
+
     const send = async() => {
-      let body = {title : identifiedPlace.title, body : identifiedPlace.body}
+      let body = {title : formState.inputs.title.value, description : formState.inputs.description.value}
       try {
         const responseData = await sendRequest(`http://localhost:4000/places/${placeId}`,"PATCH", 
-          body , {
-          "Content-Type": "application/json-patch+json",
-          "Accept": "application/json"});
-          console.log(responseData)
+          JSON.stringify(body) , {'Content-Type': 'application/json',
+          'Accept': 'application/json'});
+          // console.log(responseData)
+        history.push(`/${userId}/places`)
       } catch(error) {}
-    send();
-    }  
+    }
+    send()   
   }
     // const sendRequest = useCallback(async(url, method = "PATCH",body = null, headers = {}
  
@@ -111,7 +120,7 @@ const UpdatePlaces = (props) => {
     {!isLoading && identifiedPlace && <form className = "place-form " onSubmit = {placeSubmitHandler}>
         <Input 
             element="input" 
-            id= "Title"
+            id= "title"
             type="text" 
             label="Title" 
             validators = {[VALIDATOR_REQUIRE()]}
@@ -122,7 +131,7 @@ const UpdatePlaces = (props) => {
             />
         <Input 
             element="textarea" 
-            id= "Description"
+            id= "description"
             type="text" 
             label="Description" 
             validators = {[VALIDATOR_MINLENGTH(5)]}
