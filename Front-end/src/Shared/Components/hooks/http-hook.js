@@ -16,11 +16,14 @@ const useHttpClient = () => {
         setIsLoading(true)
         const controller  = new AbortController();
         activeFetchRequests.current.push(controller);
+        if(body) {
+            body = JSON.stringify(body);
+        }
         try {
             const response = await fetch(url, {
                 method, headers, body, signal : controller.signal
             })
-            
+
             /* Consumed Response will not have an Okay */
             
             if (!response.ok) {
