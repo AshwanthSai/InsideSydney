@@ -10,6 +10,7 @@ import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner"
 import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
 import useHttpClient from "../../Shared/Components/hooks/http-hook";
 import { useHistory } from "react-router-dom"; 
+import ImageUpload from "../../Shared/Components/FormElements/ImageUpload";
 
 
 const Authenticate = (props) => {
@@ -32,7 +33,6 @@ const Authenticate = (props) => {
     const navigate = useHistory();
 
     const authSubmitHandler = async(e) => {
-        console.log("Click Registered")
         e.preventDefault()
         
         /* Sign Up Mode */      
@@ -115,12 +115,13 @@ const Authenticate = (props) => {
                         onInput = {inputHandler}
                         errorText = "Please enter a valid email"
                     />
+                    {!isLogedInMode && <ImageUpload center id = "image"/>}
                     <Input
                         element="input" 
                         id= "password"
                         type="password" 
                         label="Password"
-                        validators = {[VALIDATOR_REQUIRE(), VALIDATOR_MINLENGTH(5)]} 
+                        validators = {[VALIDATOR_REQUIRE(), VALIDATOR_MINLENGTH(6)]} 
                         // onInput pass back to parent store
                         onInput = {inputHandler}
                         errorText = "Please enter a valid password"

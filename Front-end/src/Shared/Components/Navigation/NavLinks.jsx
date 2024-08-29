@@ -5,12 +5,12 @@ import AuthContext from "../../Context/AuthContext";
 
 
 const NavLinks = (props) => {
-  const {isLoggedIn, logOut} = useContext(AuthContext);
+  const {isLoggedIn, logOut, userId} = useContext(AuthContext);
 
   return (
     <ul className = "nav-links">
         <li><NavLink to ="/" exact>ALL Users</NavLink></li>
-        {isLoggedIn && <li><NavLink to ="/placeholder/places">My Places</NavLink></li>}
+        {isLoggedIn && <li><NavLink to ={`/${userId}/places`}>My Places</NavLink></li>}
         {/* /places is important, else it will add /places for each click to base URL*/}
         {isLoggedIn &&<li><NavLink to ="/places/new">Add Place</NavLink></li>}
         {!isLoggedIn && <li><NavLink to ="/auth">Authenticate</NavLink></li>}
