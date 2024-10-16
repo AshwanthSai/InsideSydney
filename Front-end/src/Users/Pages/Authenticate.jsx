@@ -30,9 +30,11 @@ const Authenticate = (props) => {
     }, true);
 
     const {isLoading, error, sendRequest, clearError} = useHttpClient();
+    /* For automatic routing to Page */
     const navigate = useHistory();
 
     const authSubmitHandler = async(e) => {
+        /* Prevent Page reload on Form Submit */
         e.preventDefault()
         
         /* Sign Up Mode */      
@@ -69,7 +71,6 @@ const Authenticate = (props) => {
         }
     }    
 
-
     /* 
         In sign up, there is a new input field. i.e. Name
         When you switch to login, it should be removed from FormState 
@@ -78,15 +79,16 @@ const Authenticate = (props) => {
     const switchModeHandler = () => {
         if(isLogedInMode) {
             /* Remove name input from formState.inputs */
+            console.log("Login Mode")
             delete formState.inputs.name
-            console.log(formState)
+            delete formState.inputs.image
         } else {
             // Adding name input field to formState
             setFormState({name:"", isvalid:false, ...formState}, formState.isValid)
         } 
         setisLogedInMode(previousState => !previousState);
     }
-
+    
     return(
         <>
             <ErrorModal error = {error} onClear = {clearError} />
@@ -102,6 +104,7 @@ const Authenticate = (props) => {
                         type="text" 
                         label="Name"
                         validators = {[VALIDATOR_MINLENGTH(5),VALIDATOR_REQUIRE()]} 
+                        // [{type: VALIDATOR_TYPE_MINLENGTH,val: 5}, {type: VALIDATOR_TYPE_REQUIRE }]
                         onInput = {inputHandler}
                         errorText = "Please enter a valid name"
                     />
@@ -115,7 +118,7 @@ const Authenticate = (props) => {
                         onInput = {inputHandler}
                         errorText = "Please enter a valid email"
                     />
-                    {!isLogedInMode && <ImageUpload center id = "image"/>}
+                    {!isLogedInMode && <ImageUpload center id = "image" onInput = {inputHandler}/>}
                     <Input
                         element="input" 
                         id= "password"

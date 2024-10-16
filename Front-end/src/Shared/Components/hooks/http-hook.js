@@ -14,15 +14,20 @@ const useHttpClient = () => {
     /* Below are default parameters */
     const sendRequest = useCallback(async(url, method = "GET",body = null, headers = {}) => {
         setIsLoading(true)
+        /* 
+            If the screen changes and you change state of the previous page. React considers that as invalid
+            If when you are making a fetch within a page or component.
+            When you switch, you should abort your fetch request
+        */
         const controller  = new AbortController();
         activeFetchRequests.current.push(controller);
         try {
+            /* Attaching our abort controllers as Signal within Payload */
             const response = await fetch(url, {
                 method, headers, body, signal : controller.signal
             })
 
             /* Consumed Response will not have an Okay */
-            
             if (!response.ok) {
                 const responseData = await response.json(); // Parse only if response is not OK
                 throw new Error(responseData.message || 'An error occurred'); // Provide a default error message
@@ -49,6 +54,7 @@ const useHttpClient = () => {
         setError(null)
     }
 
+    /* Is called when component or page is switched */
     useEffect(() => {
         /* Clean Up Function */
         return () => {

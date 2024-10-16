@@ -13,23 +13,24 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [uid, setUserId] = useState("")
   /*
-    For each route switch, you do not want to re-initiate the function,
+    For each route switch, (It will re-evaluate App.jsx)
+    You do not want to re-initiate the function,
     It will reset the Global State
   */
   const logIn = useCallback((uid)=> {
-    console.log("Logged In")
     setIsLoggedIn(true)
     setUserId(uid)
   }, [])
   
   const logOut = useCallback(() => {
-    console.log("Logged Out")
     setIsLoggedIn(false)
     setUserId(null)
   },[])
   
   let routes;
-
+  /* 
+    Protecting Routes in Front End
+   */
   if (isLoggedIn) {
     routes = (
       <Switch>
@@ -78,8 +79,10 @@ function App() {
     /* Binding our global state variables to context */
     <AuthContext.Provider value = {{isLoggedIn, userId : uid, logIn, logOut}}>
       <BrowserRouter>
+      {/* Navigation bar is omnipresent throughout all routes. */}
       <MainNavigation/>
       <main>
+        {/* Protected routes, Segregated with Global Login/Logout Context */}
         {routes}
       </main>
       </BrowserRouter>

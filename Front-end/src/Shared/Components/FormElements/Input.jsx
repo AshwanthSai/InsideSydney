@@ -12,6 +12,9 @@ const inputReducer = (state, action) => {
                 */
                 value : action.value, isValid: validate(action.value, action.validators)
             }
+        /* 
+            To prevent, first time validity check
+        */    
         case "TOUCHED" : 
         return {...state, isTouched: action.isTouched}   
         default :  
@@ -46,6 +49,11 @@ const Input = (props) => {
        )
     } 
 
+    /* 
+        If input prop type
+            input then small input
+            else render a Text Area. 
+    */
     const element =
         props.element ==="input" ? (
             <input id={props.id} type={props.type}
@@ -65,7 +73,7 @@ const Input = (props) => {
     const{id, onInput} = props
     const{value,isValid} = inputState
 
-    /* On input pass to parent */
+    /* On input pass to parent Form State*/
     useEffect(() => {
         onInput(id, value, isValid)
     }, [onInput,value,isValid])

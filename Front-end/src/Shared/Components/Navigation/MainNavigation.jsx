@@ -7,7 +7,6 @@ import SideDrawer from "./SideDrawer";
 import Backdrop from "./Backdrop";
 
 
-
 const MainNavigation = () => {
   const[HamBurger, setHamburger] = useState(false)
   
@@ -20,15 +19,17 @@ const MainNavigation = () => {
   }
 
   return (
+    /* If screen size is low, show Hamburger and Hide Links */
     <React.Fragment>
     {HamBurger &&
-     <Backdrop onClick = {closeDrawerHandler}/>}
+     <Backdrop onClick = {closeDrawerHandler}/>} 
     {HamBurger &&
      (<SideDrawer show = {HamBurger} onClick = {closeDrawerHandler}>
       <nav className="main-navigation__drawer-nav" >
         <NavLinks/>
       </nav>
     </SideDrawer>)}
+    {/* Show entire links, if screen size is big */}
     <MainHeader>
         {/* HamBurger Button */}
         <button className="main-navigation__menu-btn" onClick = {openDrawerHandler}>

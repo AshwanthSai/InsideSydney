@@ -20,10 +20,12 @@ export const VALIDATOR_MIN = val => ({ type: VALIDATOR_TYPE_MIN, val: val });
 export const VALIDATOR_MAX = val => ({ type: VALIDATOR_TYPE_MAX, val: val });
 export const VALIDATOR_EMAIL = () => ({ type: VALIDATOR_TYPE_EMAIL });
 
-
 /* 
-Value - Value of UseReducer State -> Numbers/Strings
-Validators - [VALIDATOR_REQUIRE, VALIDATOR_FILE,VALIDATOR_EMAIL]
+  We call validate when there is a change in value.
+  Within Input Component, Which gets a isValid Boolean. From the function below
+
+  Value - Value of UseReducer State -> Numbers/Strings
+  Validators - [VALIDATOR_REQUIRE, VALIDATOR_FILE,VALIDATOR_EMAIL]
 */
 export const validate = (value, validators) => {
   let isValid = true;

@@ -14,6 +14,7 @@ import React, { useCallback, useReducer } from "react";
 
 const formReducer = (state, action) => {
     switch(action.type) {
+      /* Recompute Entire Form Validity */
       case "INPUT_CHANGE": 
         let formIsValid = true;
         /*
@@ -44,12 +45,11 @@ const formReducer = (state, action) => {
             Find the Appropriate input Type, update its value.
             title : {value : newValue, isValid: newValue}
           */
-         
           [action.inputID]  : {value : action.value, isValid: action.isValid}
         },
         /* Entire Form Validity */
           isValid : formIsValid
-        }
+      }
 
       case "SET_DATA": 
         return {
@@ -83,7 +83,6 @@ const useForm = (InitialInput, InitialValidity) => {
         const inputID = id
         dispatch({type: eventType, inputID, value, isValid})
     },[]);
-
 
     /* To set once, network request is resolved */
     const setFormData =  useCallback((inputData, formValidity) => {

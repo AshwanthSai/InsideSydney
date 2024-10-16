@@ -18,19 +18,23 @@ import AuthContext from "../../Shared/Context/AuthContext";
 const UserPlaces = () => {
   //  <Route path = "/:userId/places"
   const[loadedPlaces, setLoadedPlaces] = useState()
+  /* 
+    Using our Custom HTTP Request Client
+  */
   const {isLoading, error, sendRequest, clearError} = useHttpClient();
   const userId = useParams().userId;
   /* 
-    If you do notuseffect, the function is re-evaluated for re-render
+    If you do not use useEffect, the function is re-evaluated for re-render
     If you do not store the result of useEffect in a State, it will not reload after fetch is complete
   */
   useEffect(()=> {
     const request = async() => {
       try {
-        console.log(userId)
         const filteredPlaces = await sendRequest(`http://localhost:4000/places/user/${userId}`)
         setLoadedPlaces(filteredPlaces.result)
-      } catch (err) {}
+      } catch (err) {
+        /* We catch errors within our HTTP Client itself */
+      }
     }
     request();
   }, [sendRequest, userId])
