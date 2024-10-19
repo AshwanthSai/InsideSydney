@@ -10,9 +10,8 @@ var cors = require('cors')
     res.json({"name" : "Sai"})
 }) */
 
-app.use(express.json())
 app.use(cors())
-
+app.use(express.json())
 
 app.use("/places", placesRouter)
 app.use("/users", usersRouter)
@@ -41,7 +40,9 @@ app.use((err,req,res,next) => {
     is InsideSydney
     after .net/
 */
-mongo.connect("mongodb+srv://ashwanthsaie:insideSydney123@insidesydney.e5fhyis.mongodb.net/InsideSydney?retryWrites=true&w=majority&appName=insideSydney")
+mongo.connect(
+    "mongodb+srv://ashwanthsaie:insideSydney123@insidesydney.e5fhyis.mongodb.net/InsideSydney?retryWrites=true&w=majority&appName=insideSydney"
+)
 .then(() => {
         console.log("Connected to DB")
         try {
@@ -51,6 +52,7 @@ mongo.connect("mongodb+srv://ashwanthsaie:insideSydney123@insidesydney.e5fhyis.m
             console.log(err)
         }
     }
-).catch(() => {
+).catch((err) => {
+    console.log(err)
     console.log("Cannot connect to DB")
 })

@@ -53,7 +53,6 @@ const getPlaceByUserId = async (req,res,next) => {
         return next(error)
     }
     
-    console.log(result)
 
     if(!result){
           throw new HttpError("Place for user not found", 404)
@@ -70,13 +69,15 @@ const getPlaceByUserId = async (req,res,next) => {
 }
 
 const createPlace = async (req,res,next) => {
+    let flag = true
+    flag ? console.log("Route has been Hit") : null;
     const err = validationResult(req)
     if(!err.isEmpty()){
         return next(new HttpError("Invalid Input", 422))
     }
     
     const {title, description, address, creator, image} = req.body
-    
+
     let coordinates;
     try {
         coordinates = await getCordinates(address)
@@ -84,11 +85,13 @@ const createPlace = async (req,res,next) => {
         return next(new HttpError("Geocoding Failed"))
     }
 
+   
+
 
     const createdPlace = new Place({
         title,
         description,
-        image,
+        image : "Dummy Image",
         location : coordinates,
         address, 
         creator
@@ -102,16 +105,19 @@ const createPlace = async (req,res,next) => {
         Commit transaction
      */
 
+
     let user;
     try {
         user = await User.findById(creator)
     } catch(err) {
         return next(new HttpError("Creating Place Failed", 500))
     } 
-    
+
+
     if(!user){
         return next(new HttpError("Could not find user as a Creator", 404))
     }
+
 
     try {
         const session = await moongoose.startSession()
@@ -119,7 +125,6 @@ const createPlace = async (req,res,next) => {
         await createdPlace.save({session:session}) // Saving Place, passing Session.
         // Internal Mongoose Method, not array push below.
         user.places.push(createdPlace) // Creating a modified user
-        console.log(`Point`)
         await user.save({session:session}) // Saving User, passing Session.
         session.commitTransaction()
     } catch(err) {
@@ -133,7 +138,7 @@ const createPlace = async (req,res,next) => {
 const updatePlaceById = async(req,res,next) => {
     const err = validationResult(req)
     if(!err.isEmpty()){
-        return next(HttpError("Invalid Input", 422))
+        return next(new HttpError("Invalid Input", 422))
     }
     const placeId = req.params.pid 
     const{title, description} = req.body
@@ -141,7 +146,6 @@ const updatePlaceById = async(req,res,next) => {
     /* Fetching the item */
     let item; 
     try {
-        console.log(placeId)
         item = await Place.findById(placeId)
     } catch(err) {
         const error = new HttpError("Cannot find place", 404)
@@ -152,6 +156,7 @@ const updatePlaceById = async(req,res,next) => {
     item["title"] = title
     item["description"] = description
 
+    console.log(item)
     // Overwriting record, by saving back to db.
     try {
         await item.save()
@@ -159,7 +164,7 @@ const updatePlaceById = async(req,res,next) => {
         const error = new HttpError("Cannot Create Place", 500)
         return next(error)
     }
-
+    console.log({place :item.toObject({getters:true})})
     res.status(200).json({place : item.toObject({getters:true})})
 }
 
@@ -188,13 +193,11 @@ const deletePlace = async(req,res,next) => {
             2. Remove Place ID from user using pull
         Commit Transaction
     */
-    console.log(item);
     
     try {
         const session = await moongoose.startSession();
         session.startTransaction()
         await item.deleteOne({session : session})
-        console.log(`Point`) 
         /* 
             Remove User ID from places
             This is not an array.pull method

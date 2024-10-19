@@ -12,7 +12,7 @@ router.get("/user/:uid", placesControllers.getPlaceByUserId)
 router.get("/:pid",placesControllers.getPlace)
 
 
-router.post("/",
+router.post("/new",
     [
         check("title").not().isEmpty(),
         check("description").isLength({min:5}),
