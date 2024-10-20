@@ -19,11 +19,11 @@ const UpdatePlaces = (props) => {
   const{userId} = useContext(AuthContext)
   
   /*
-  setFormData -  
-   What if the network request comes late
-   We cannot initialize a hook in a fetch block
-   So we will create an UpdatePlace method for useForm
-   Initialize form with dummy values and then update them later.
+    setFormData -  
+    What if the network request comes late
+    We cannot initialize a hook in a fetch block
+    So we will create an UpdatePlace method for useForm
+    Initialize form with dummy values and then update them later.
   */
  
  const [formState, inputHandler, setFormData] = useForm({
@@ -38,12 +38,13 @@ const UpdatePlaces = (props) => {
   }, false)
   
   /*
-  If you set the form directly
-  useForm will internally update its State.
-  Since we are subscribed to that state, this page reloads.
-  Again, calling setForm into a while loop.
+    If you set the form directly
+    useForm will internally update its State.
+    Since we are subscribed to that state, this page reloads.
+    Again, calling setForm into a while loop.
+  
+    Below is Aux to prevent, page reload when setting state.
   */
-
   useEffect(() => {
    const send = async() => {
     /* Fetch the particular place details.*/

@@ -48,7 +48,8 @@ const signUp = async(req, res, next) => {
         name, 
         email,
         password, 
-        image : "test", 
+        /* req.file.path is Automatically added by multer */
+        image : req.file.path, 
         /* 
             Create an array in places field,
             which we will populate later.

@@ -25,7 +25,8 @@ export const VALIDATOR_EMAIL = () => ({ type: VALIDATOR_TYPE_EMAIL });
   Within Input Component, Which gets a isValid Boolean. From the function below
 
   Value - Value of UseReducer State -> Numbers/Strings
-  Validators - [VALIDATOR_REQUIRE, VALIDATOR_FILE,VALIDATOR_EMAIL]
+  Validators -> [VALIDATOR_REQUIRE(), VALIDATOR_FILE()]
+             -> [{type: VALIDATOR_TYPE_REQUIRE},{type: VALIDATOR_TYPE_FILE},{type: VALIDATOR_TYPE_EMAIL}]
 */
 export const validate = (value, validators) => {
   let isValid = true;

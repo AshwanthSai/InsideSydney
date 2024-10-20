@@ -33,18 +33,20 @@ const Authenticate = (props) => {
     /* For automatic routing to Page */
     const navigate = useHistory();
 
-    const authSubmitHandler = async(e) => {
+    const authSubmitHandler = async(event) => {
         /* Prevent Page reload on Form Submit */
-        e.preventDefault()
-        
+        event.preventDefault()
         /* Sign Up Mode */      
         if(!isLogedInMode) { 
-            try{
-                const responseData = await sendRequest(`http://localhost:4000/users/signup`,"POST", JSON.stringify({
-                    name : formState.inputs.name.value,
-                    email : formState.inputs.email.value,
-                    password : formState.inputs.password.value,
-                }), {"Content-Type" : "application/json"})
+            try{    
+                const formData = new FormData();
+                formData.append("name", formState.inputs.name.value)
+                formData.append("email", formState.inputs.email.value)
+                formData.append("password",formState.inputs.email.value )
+                formData.append("image",formState.inputs.image.value )
+                const responseData = await sendRequest(`http://localhost:4000/users/signup`,"POST", 
+                    formData
+                )
                 
                 // We are pulling out the User Id from the response of Login Data
                 logIn(responseData.newUser.id)
@@ -78,13 +80,19 @@ const Authenticate = (props) => {
     */
     const switchModeHandler = () => {
         if(isLogedInMode) {
+            // Adding name input field to formState
+            // console.log("Sign up mode")
+            console.log(formState)
+            const modifiedFormState = {...formState}
+            modifiedFormState.inputs.name =  {value : "", isValid : false}
+            modifiedFormState.inputs.image =  {value : null, isValid : false}
+            setFormState(modifiedFormState, formState.isValid)
+        } else {
             /* Remove name input from formState.inputs */
-            console.log("Login Mode")
+            // console.log("Log in mode")
+            console.log(formState)
             delete formState.inputs.name
             delete formState.inputs.image
-        } else {
-            // Adding name input field to formState
-            setFormState({name:"", isvalid:false, ...formState}, formState.isValid)
         } 
         setisLogedInMode(previousState => !previousState);
     }
@@ -118,7 +126,7 @@ const Authenticate = (props) => {
                         onInput = {inputHandler}
                         errorText = "Please enter a valid email"
                     />
-                    {!isLogedInMode && <ImageUpload center id = "image" onInput = {inputHandler}/>}
+                    {!isLogedInMode && <ImageUpload center id="image" onInput = {inputHandler} onError = "Please Pick a Valid File"/>}
                     <Input
                         element="input" 
                         id= "password"

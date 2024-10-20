@@ -2,78 +2,77 @@ import React, { useEffect, useRef, useState } from "react";
 import "./ImageUpload.css"
 import Button from "./Button";
 
-
 const ImageUpload = (props) => {
-  const [file,setFile] = useState();
-  const [previewUrl, setPreviewUrl] = useState();
-  const [isValid, setIsValid] = useState();
+  const[file, setFile] = useState();
+  const[previewUrl, setPreviewUrl] = useState();
+  const[isValid, setIsValid] = useState(false);
 
-  /* Aux to click on this DOM Element. */
-  const filePickerRef = useRef(); 
-
-  /* Used to Set Preview */
-  useEffect(() => {
-    if(!file) {
-      return
-    }
-    let fileReader = new FileReader();
-    fileReader.onload = () => {
-      setPreviewUrl(fileReader.result)
-    }
-    fileReader.readAsDataURL(file)
-  }, [file]);
-
-  /* OnChange in Picker, Sets id, file and Validity, aux to send to FormState */
+  const filePicker = useRef();
   const pickHandler = (event) => {
-    /* Files are stored in as File List */
+    filePicker.current.click();
+  }
+
+  /* 
+    State changes are not immediate and
+    we are passing it upwards. Hence we use a proxy boolean
+    called fileValidity.
+  */
+  const pickedFileHandler = (event) => {
     let pickedFile;
-    let fileValidity;
-    /* If event.target.file exists or if event.target.file list length == 1*/
-    if(event.target.file || event.target.files.length === 1) {
-      pickedFile = event.target.files[0];
+    let fileValidity = isValid;
+    if(event.target.files && event.target.files.length === 1){
+      pickedFile = event.target.files[0]
       setFile(pickedFile)
       setIsValid(true)
-      fileValidity = true  // State updates are not Synchronous, Aux to pull data on to FormState
+      fileValidity = true;
     } else {
       setIsValid(false)
-      fileValidity = false // State updates are not Synchronous,  Aux to pull data on to FormState
+    }
+    // console.log(pickedFile)
+    // console.log(typeof pickedFile)
+    props.onInput(props.id, pickedFile,fileValidity)
+  }
+
+  useEffect(() => {
+    if (!file) {
+      return;
     }
     /* 
-      useForm accepts
-      onInput(id, value, isValid)
+      2, has to be specified before 1. 
+      Clunky API
     */
-    props.onInput(props.id,pickedFile,fileValidity)
-  }
-
-  /*
-    Button > Clicks the Image Picker which is not visible 
-    to the User.
-  */
-  const pickImageHandler = () => {
-    filePickerRef.current.click()
-  }
+    const fileReader = new FileReader();
+    // Set the onload event handler
+    fileReader.onload = () => {
+      //2
+      setPreviewUrl(fileReader.result); // Set the preview URL
+    };
+    // Start reading the file
+    //1
+    fileReader.readAsDataURL(file);
+  }, [file]);
 
   return (
-    <div className = "form-control">
-        <input
-         id  = {props.id}
-         style = {{display:"none"}} 
-         type = "file" 
-         accept = ".jpg,.png,.jpeg"
-         ref = {filePickerRef}
-         onChange = {pickHandler}
-         />
-        <div className = {`image-upload ${props.center && `center`}`}>
-            <div className = "image-upload__preview">
-                {!previewUrl && <p>Please Pick an Image</p>}
-                {previewUrl && <img alt = "Preview" src={previewUrl}/>}
-            </div>
-            <Button type="button" onClick = {pickImageHandler}>Pick Image</Button>
+  <React.Fragment>
+    <div className="form-control">
+      <input 
+        id = {props.id}
+        type="file" 
+        accept = ".jpg,.png,jpeg" 
+        style ={{display:"none"}}
+        ref = {filePicker}
+        onChange={pickedFileHandler}
+      />
+      <div className = {`image-upload ${props.center && "center"}`}>
+        <div className = "image-upload__preview" >
+          {previewUrl && <img src={previewUrl} alt= "Preview"/>}
+          {!previewUrl && <p>Please pick an image.</p>}
         </div>
-        {!isValid && <p>{props.error}</p>}
+        <Button type = "button" onClick={pickHandler}>Pick Image</Button>
+      </div>
+      {!isValid && <p>{props.errorText}</p>}
     </div>
-
-  );
+  </React.Fragment>)
 };
 
 export default ImageUpload;

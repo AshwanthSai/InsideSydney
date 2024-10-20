@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router();
 const placesControllers = require("../contollers/places-controllers");
 const {check} = require("express-validator")
-
+const upload = require("../middleware/file-upload");
 
 //app.use("/places", router)
 //Fetch all places that belong to a User ID
@@ -12,7 +12,7 @@ router.get("/user/:uid", placesControllers.getPlaceByUserId)
 router.get("/:pid",placesControllers.getPlace)
 
 
-router.post("/new",
+router.post("/new", upload.single("image"),
     [
         check("title").not().isEmpty(),
         check("description").isLength({min:5}),

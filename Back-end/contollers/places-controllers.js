@@ -5,6 +5,7 @@ const { getCordinates } = require('../utils/location');
 const Place = require('../models/places');
 const moongoose = require("mongoose");
 const User = require('../models/users');
+const fs = require("fs")
 
 /* 
     /places/id -> Fetches particular id 
@@ -69,14 +70,12 @@ const getPlaceByUserId = async (req,res,next) => {
 }
 
 const createPlace = async (req,res,next) => {
-    let flag = true
-    flag ? console.log("Route has been Hit") : null;
     const err = validationResult(req)
     if(!err.isEmpty()){
         return next(new HttpError("Invalid Input", 422))
     }
     
-    const {title, description, address, creator, image} = req.body
+    const {title, description, address, creator} = req.body
 
     let coordinates;
     try {
@@ -85,13 +84,14 @@ const createPlace = async (req,res,next) => {
         return next(new HttpError("Geocoding Failed"))
     }
 
-   
-
-
     const createdPlace = new Place({
         title,
         description,
-        image : "Dummy Image",
+        /* 
+         req.file.path will have path of Storage.
+         Appended by Multer 
+        */
+        image : req.file.path,
         location : coordinates,
         address, 
         creator
@@ -105,7 +105,6 @@ const createPlace = async (req,res,next) => {
         Commit transaction
      */
 
-
     let user;
     try {
         user = await User.findById(creator)
@@ -118,11 +117,13 @@ const createPlace = async (req,res,next) => {
         return next(new HttpError("Could not find user as a Creator", 404))
     }
 
+    console.log(createdPlace)
 
     try {
         const session = await moongoose.startSession()
         session.startTransaction()
         await createdPlace.save({session:session}) // Saving Place, passing Session.
+        console.log("Transaction Pointer")
         // Internal Mongoose Method, not array push below.
         user.places.push(createdPlace) // Creating a modified user
         await user.save({session:session}) // Saving User, passing Session.
@@ -202,12 +203,17 @@ const deletePlace = async(req,res,next) => {
             Remove User ID from places
             This is not an array.pull method
         */
-        item.creator.places.pull(item) 
+       item.creator.places.pull(item) 
         await item.creator.save({session : session})
         session.commitTransaction() 
     } catch(err) {
         return next(new HttpError("Something went wrong during Transaction", 500))
     }
+    
+    /* Cleaning up Image */
+    fs.unlink(item.image,(err) => {
+        console.log(err)
+    })
 
     res.status(200).json({message : "Delete Complete"})
 }

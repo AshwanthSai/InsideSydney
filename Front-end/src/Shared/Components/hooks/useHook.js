@@ -66,6 +66,7 @@ const formReducer = (state, action) => {
  useHook does not accept props, but takes in argument
  Remember, this is a Hook.
 */
+
 const useForm = (InitialInput, InitialValidity) => {
     const [formState,dispatch] = useReducer(formReducer, {
         inputs: InitialInput,

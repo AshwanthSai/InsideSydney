@@ -9,6 +9,7 @@ import AuthContext from "../../Shared/Context/AuthContext";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
 import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
+import ImageUpload from "../../Shared/Components/FormElements/ImageUpload";
 
   /* 
     NewPlaces
@@ -19,6 +20,10 @@ import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner"
 
 const NewPlaces = () => {
   const {isLoading, error, sendRequest, clearError} = useHttpClient()
+  /* 
+    If we destructure the setter method for userId
+    We can  write to Global Store Here.
+  */
   const {userId} = useContext(AuthContext)
   const[formState, inputHandler] = useForm({
       title : {
@@ -32,8 +37,14 @@ const NewPlaces = () => {
       address : {
         value: "",
         isValid: true
+      },
+      image : {
+        value: null,
+        isValid: false
       }
   }, false);
+
+  /* For automatic routing to pages */
   const navigate = useHistory();
 
   /*
@@ -46,26 +57,33 @@ const NewPlaces = () => {
 
   const placeSubmitHandler = async(e) => {
     e.preventDefault()
+    /* 
+      Remember for POST, PUT, DELETE requests 
+      You need to send Metadata along with the request.
+    */
     try {
-      const responseData = await sendRequest("http://localhost:4000/places/new","POST", JSON.stringify({
-        title : formState.inputs.title.value,
-        description : formState.inputs.description.value,
-        address : formState.inputs.address.value,
-        creator : userId,
-      }), {"Content-Type" : "application/json"})
-       navigate.push("/")
+      const formData = new FormData();
+      formData.append("title", formState.inputs.title.value)
+      formData.append("description", formState.inputs.description.value)
+      formData.append("address",formState.inputs.address.value)
+      formData.append("image",formState.inputs.image.value)
+      formData.append("creator",userId)
+      console.log(formData)
+      console.log(formState)
+      const responseData = await sendRequest("http://localhost:4000/places/new","POST", formData)
+      /* Here our custom hook, will catch and show any Errors */
+      navigate.push("/")
     } catch(error){
 
     }
   }
-
 
   return (
     <>
       <ErrorModal error = {error} onClear = {clearError} />
         <form className="place-form">
         {/* All input is passed to Input Handler within useForm*/}
-        {isLoading && <LoadingSpinner asOverlay/>}
+        {isLoading && <LoadingSpinner center asOverlay/>}
         <Input 
           element="input" 
           id= "title"
@@ -93,7 +111,7 @@ const NewPlaces = () => {
           onInput = {inputHandler}
           errorText = "Please enter a longer address"
           />
-          {console.log(formState)}
+        <ImageUpload center id="image" onInput = {inputHandler} onError = "Please Pick a Valid File"/>
         <Button type = "submit" 
           // If entire form state is inValid then, disable form
           disabled = {!formState.isValid}

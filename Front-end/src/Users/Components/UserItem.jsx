@@ -4,14 +4,15 @@ import './UserItem.css';
 import Card from '../../Shared/Components/UIElements/Card';
 import Avatar from '../../Shared/Components/UIElements/Avatar';
 
-
 const UserItem = props => {
   return (
     <li className="user-item">
       <Card className="user-item__content">
         <Link to={`/${props.id}/places`}>
           <div className="user-item__image">
-            <Avatar image={props.image} alt={props.name} />
+            {/* Prepending URL to Convert Path to URL */}
+            {/* Seems to be working when \ instead of  /  */}
+            <Avatar image={`http://localhost:4000\\` + props.image} alt={props.name} />
           </div>
           <div className="user-item__info">
             <h2>{props.name}</h2>
