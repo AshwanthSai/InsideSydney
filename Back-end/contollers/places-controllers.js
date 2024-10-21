@@ -28,7 +28,7 @@ const getPlace = async(req,res,next) => {
         return next(error); // Only Stops Execution
         // return res.status(404).json({message: "Place for user not found"})
     }
-    // res.send("<h1>Handeller 1 instead of Handeller 2</h1>") // {result : result}
+    // res.send("<h1>Handler 1 instead of Handler 2</h1>") // {result : result}
     res.status(201).json({result : result.toObject({getters:true})})
 }
 
@@ -141,6 +141,7 @@ const updatePlaceById = async(req,res,next) => {
     if(!err.isEmpty()){
         return next(new HttpError("Invalid Input", 422))
     }
+
     const placeId = req.params.pid 
     const{title, description} = req.body
 
@@ -152,10 +153,20 @@ const updatePlaceById = async(req,res,next) => {
         const error = new HttpError("Cannot find place", 404)
         return next(error)
     }
+    
+    /* 
+        Check if place belongs to particular user
+        req.userData is attached by checkAuth
+    */
+   console.log(item)
+    if(item.creator.toString() != req.userData.userId) {
+        return next(new HttpError("User not Authorized to Edit", 401))
+    }
 
     // Making changes in the Object
     item["title"] = title
     item["description"] = description
+
 
     console.log(item)
     // Overwriting record, by saving back to db.
@@ -184,8 +195,17 @@ const deletePlace = async(req,res,next) => {
         return next(new HttpError("Could not Delete Item"))
     }   
     
-    if(!item){
-      return next(new HttpError("Item does not Exist", 404))
+
+    if(!item) {
+        return next(new HttpError("Place not found", 404))
+    }
+    /* 
+        Check if place belongs to particular user
+        req.userData is attached by checkAuth
+        creator is Mongoose Object.
+    */
+    if(item.creator.id.toString() !== req.userData.userId) {
+        return next(new HttpError("User not Authorized to Update", 401))
     }
 
     /* 

@@ -16,7 +16,7 @@ const UpdatePlaces = (props) => {
   const {isLoading, error, sendRequest, clearError} = useHttpClient();
   const[identifiedPlace, setIdentifiedPlace] = useState()
   const history = useHistory();
-  const{userId} = useContext(AuthContext)
+  const{userId, token} = useContext(AuthContext)
   
   /*
     setFormData -  
@@ -105,8 +105,12 @@ const UpdatePlaces = (props) => {
       let body = {title : formState.inputs.title.value, description : formState.inputs.description.value}
       try {
         const responseData = await sendRequest(`http://localhost:4000/places/${placeId}`,"PATCH", 
-          JSON.stringify(body) , {'Content-Type': 'application/json',
-          'Accept': 'application/json'});
+          JSON.stringify(body) , 
+          {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' +  token,
+          });
           // console.log(responseData)
         history.push(`/${userId}/places`)
       } catch(error) {}

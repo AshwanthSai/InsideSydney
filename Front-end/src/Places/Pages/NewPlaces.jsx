@@ -24,7 +24,7 @@ const NewPlaces = () => {
     If we destructure the setter method for userId
     We can  write to Global Store Here.
   */
-  const {userId} = useContext(AuthContext)
+  const {userId, token} = useContext(AuthContext)
   const[formState, inputHandler] = useForm({
       title : {
         value: "",
@@ -70,7 +70,12 @@ const NewPlaces = () => {
       formData.append("creator",userId)
       console.log(formData)
       console.log(formState)
-      const responseData = await sendRequest("http://localhost:4000/places/new","POST", formData)
+      /* 
+        Adding token within request header
+      */
+      const responseData = await sendRequest("http://localhost:4000/places/new","POST", formData, {
+        "Authorization" : "Bearer " + token,
+      })
       /* Here our custom hook, will catch and show any Errors */
       navigate.push("/")
     } catch(error){

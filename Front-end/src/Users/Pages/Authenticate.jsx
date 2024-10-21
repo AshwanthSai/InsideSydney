@@ -49,7 +49,8 @@ const Authenticate = (props) => {
                 )
                 
                 // We are pulling out the User Id from the response of Login Data
-                logIn(responseData.newUser.id)
+                console.log(responseData)
+                logIn(responseData.newUser.id,responseData.token)
                 navigate.push("/") 
             } catch(err) {
                 /* All states are passed to Error above, we do not need to explicitly do anything */
@@ -62,9 +63,8 @@ const Authenticate = (props) => {
                     email : formState.inputs.email.value,
                     password : formState.inputs.password.value,
                 }), {"Content-Type" : "application/json"})
-                console.log(error)
-                console.log(responseData.userExist.id)
-                logIn(responseData.userExist.id)
+                console.log(responseData)
+                logIn(responseData.userExist.id, responseData.token)
                 navigate.push("/") 
             } catch(err) {
                 console.log(error)

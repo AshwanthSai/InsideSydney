@@ -2,6 +2,8 @@ const { v4: uuidv4 } = require('uuid');
 const { HttpError } = require('../models/http-error');
 const{validationResult} = require("express-validator");
 const User = require('../models/users');
+const bcrypt = require('bcrypt');
+var jwt = require('jsonwebtoken');
 
 const fetchUsers = async(req, res, next) => {
     let users;
@@ -44,10 +46,17 @@ const signUp = async(req, res, next) => {
         return next(new HttpError("User already exists", 422))
     }
 
+    let hashedPassword;
+    try {
+        hashedPassword = await bcrypt.hash(password, 10)
+    } catch(err) {
+        next(new HttpError("Could not create user, try again later", 500))
+    }
+
     const newUser = new User({
         name, 
         email,
-        password, 
+        password : hashedPassword, 
         /* req.file.path is Automatically added by multer */
         image : req.file.path, 
         /* 
@@ -63,9 +72,15 @@ const signUp = async(req, res, next) => {
         return next(new HttpError("Unable to Save User Info", 500))
     }
 
+    let token
+    try {
+        token = await jwt.sign({userId: newUser.id, email: newUser.email},"SuperSecret", {expiresIn: '1h' })
+    } catch(error) {
+        return next(new HttpError("Login : Could not register credentials, please try again later", 500))
+    }
+
     //201 - Items Created
-    console.log(newUser)
-    res.status(201).json({newUser:newUser.toObject({getters:true})})
+    res.status(201).json({newUser:newUser.toObject({getters:true}), token})
 }
 
 /* POST to Login */
@@ -84,11 +99,26 @@ const login = async(req, res, next) => {
     } catch(err) {
         return next(new HttpError("Logging in Failed", 500))
     }
+    
+    let isValid; 
+    try {
+        isValid = await bcrypt.compare(password, userExist.password)
+    } catch (err){
+        return next(new HttpError("Sign Up : Could not validate credentials, Please try again later", 500))
+    }
 
-    if(!userExist || userExist.password !== password){
-        return next(new HttpError("Invalid Credentials", 401))
+    let token;
+    try {
+        token = await jwt.sign({userId: userExist.id, email: userExist.email},"SuperSecret", {expiresIn: '1h' })
+    } catch (err) {
+        return next(new HttpError("Could not create JWT, Please try again later", 500))
+        
+    }
+
+    if(!userExist || !isValid){
+        return next(new HttpError("Invalid Credentials", 403))
     } else {
-        res.status(200).json({message : "Logged In", userExist:userExist.toObject({getters:true})})
+        res.status(200).json({message : "Logged In", userExist:userExist.toObject({getters:true}), token})
     }
 }
 

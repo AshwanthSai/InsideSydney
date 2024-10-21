@@ -12,8 +12,7 @@ import ErrorModal from "../../Shared/Components/FormElements/ErrorModal";
 import LoadingSpinner from "../../Shared/Components/FormElements/LoadingSpinner";
 
 const PlaceItem = (props) => {
-  console.log(props)
-  const {isLoggedIn,userId} = useContext(AuthContext);
+  const {isLoggedIn,userId, token} = useContext(AuthContext);
   //To Render Map.
   const [showMap, setShowMap] = useState(false);
   const openMapHandler = () => setShowMap(true);
@@ -45,9 +44,10 @@ const PlaceItem = (props) => {
     setShowConfirmModal(false)
     try {
      const deleteItem = async() => {
-        const response = await sendRequest(`http://localhost:4000/places/${props.id}`, "DELETE")
+        const response = await sendRequest(`http://localhost:4000/places/${props.id}`, "DELETE", null,  {
+          'Authorization': 'Bearer ' +  token,
+        })
         props.onDelete(props.id)
-
       }
       deleteItem() 
     } catch (error){} 
@@ -105,7 +105,7 @@ const PlaceItem = (props) => {
                 </div>
                 <div className = "place-item__actions">
                   <Button inverse onClick = {openMapHandler}>View on Map</Button>
-                 {isLoggedIn && props.creatorId === userId && <Button to={`/places/${props.id}`}>Edit</Button>}
+                 {isLoggedIn && props.creatorId === userId && <Button to={`/places/${props.id}`}>EDIT</Button>}
                  {isLoggedIn && props.creatorId === userId && <Button danger onClick = {() => showDeleteWarningHandler()}>DELETE</Button>}
                 </div>
             </Card>
