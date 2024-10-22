@@ -8,6 +8,7 @@ var jwt = require('jsonwebtoken');
 const fetchUsers = async(req, res, next) => {
     let users;
     try {
+    // Do not send back passwords in JSON    
         users = await User.find({}, "-password")
     } catch(err) {
         return next(new HttpError("Could not fetch users from DB", 500))

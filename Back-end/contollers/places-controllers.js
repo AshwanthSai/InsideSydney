@@ -75,7 +75,7 @@ const createPlace = async (req,res,next) => {
         return next(new HttpError("Invalid Input", 422))
     }
     
-    const {title, description, address, creator} = req.body
+    const {title, description, address} = req.body
 
     let coordinates;
     try {
@@ -94,7 +94,7 @@ const createPlace = async (req,res,next) => {
         image : req.file.path,
         location : coordinates,
         address, 
-        creator
+        creator: req.userData.userId
     })
 
      /* 
@@ -107,17 +107,16 @@ const createPlace = async (req,res,next) => {
 
     let user;
     try {
-        user = await User.findById(creator)
+        user = await User.findById(req.userData.userId)
     } catch(err) {
         return next(new HttpError("Creating Place Failed", 500))
     } 
-
 
     if(!user){
         return next(new HttpError("Could not find user as a Creator", 404))
     }
 
-    console.log(createdPlace)
+    // console.log(createdPlace)
 
     try {
         const session = await moongoose.startSession()
@@ -131,11 +130,9 @@ const createPlace = async (req,res,next) => {
     } catch(err) {
         return next(new HttpError("Creating Place Failed, problem during transaction", 500))
     }
-
     return res.status(201).json(createdPlace)
 }
  
-
 const updatePlaceById = async(req,res,next) => {
     const err = validationResult(req)
     if(!err.isEmpty()){

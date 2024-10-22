@@ -67,9 +67,6 @@ const NewPlaces = () => {
       formData.append("description", formState.inputs.description.value)
       formData.append("address",formState.inputs.address.value)
       formData.append("image",formState.inputs.image.value)
-      formData.append("creator",userId)
-      console.log(formData)
-      console.log(formState)
       /* 
         Adding token within request header
       */

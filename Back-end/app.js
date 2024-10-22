@@ -45,9 +45,9 @@ app.use((err,req,res,next) => {
             Turn this off, if you want to check if 
             Image upload is working.
         */
-        /* fs.unlink(req.file.path, (err) => {
+        fs.unlink(req.file.path, (err) => {
             console.log(err)
-        }) */
+        }) 
     }
     if(res.headerSent){
         // We have already acknowledged the error
