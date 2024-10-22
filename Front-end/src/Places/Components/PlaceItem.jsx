@@ -44,7 +44,7 @@ const PlaceItem = (props) => {
     setShowConfirmModal(false)
     try {
      const deleteItem = async() => {
-        const response = await sendRequest(`http://localhost:4000/places/${props.id}`, "DELETE", null,  {
+        const response = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/${props.id}`, "DELETE", null,  {
           'Authorization': 'Bearer ' +  token,
         })
         props.onDelete(props.id)
@@ -96,7 +96,7 @@ const PlaceItem = (props) => {
             <Card className= "place-item__content">
                 {isLoading && <LoadingSpinner asOverlay/>} 
                 <div className="place-item__image">
-                    <img src={`http://localhost:4000\\` + props.image} alt = {props.title}/>
+                    <img src={`${process.env.REACT_APP_BACKEND_URL}\\` + props.image} alt = {props.title}/>
                 </div>
                 <div className="place-item__info">
                     <h2>{props.title}</h2>

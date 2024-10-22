@@ -49,7 +49,7 @@ const UpdatePlaces = (props) => {
    const send = async() => {
     /* Fetch the particular place details.*/
     try {
-      const responseData = await sendRequest(`http://localhost:4000/places/${placeId}`)
+      const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`)
       setIdentifiedPlace(responseData.result)
       setFormData({
         title : {
@@ -104,7 +104,7 @@ const UpdatePlaces = (props) => {
     const send = async() => {
       let body = {title : formState.inputs.title.value, description : formState.inputs.description.value}
       try {
-        const responseData = await sendRequest(`http://localhost:4000/places/${placeId}`,"PATCH", 
+        const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`,"PATCH", 
           JSON.stringify(body) , 
           {
             'Content-Type': 'application/json',

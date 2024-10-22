@@ -30,7 +30,7 @@ const UserPlaces = () => {
   useEffect(()=> {
     const request = async() => {
       try {
-        const filteredPlaces = await sendRequest(`http://localhost:4000/places/user/${userId}`)
+        const filteredPlaces = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/user/${userId}`)
         setLoadedPlaces(filteredPlaces.result)
       } catch (err) {
         /* We catch errors within our HTTP Client itself */

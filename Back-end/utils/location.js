@@ -1,8 +1,7 @@
 const { HttpError } = require("../models/http-error");
 const axios = require('axios');
 
-const API = "AIzaSyCJpI2c3iNZD0oIyEbaBXd2uwidQ5ED1bc";
-
+const API = `${process.env.GOOGLE_API}`;
 
 async function getCordinates(location) {
     const result = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}=&key=${API}`)

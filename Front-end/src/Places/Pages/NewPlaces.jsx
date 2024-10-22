@@ -70,7 +70,7 @@ const NewPlaces = () => {
       /* 
         Adding token within request header
       */
-      const responseData = await sendRequest("http://localhost:4000/places/new","POST", formData, {
+      const responseData = await sendRequest(`${process.env.REACT_APP_BACKEND_URL}/places/new`,"POST", formData, {
         "Authorization" : "Bearer " + token,
       })
       /* Here our custom hook, will catch and show any Errors */

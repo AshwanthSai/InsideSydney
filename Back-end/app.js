@@ -65,7 +65,7 @@ app.use((err,req,res,next) => {
     after .net/
 */
 mongo.connect(
-    "mongodb+srv://ashwanthsaie:insideSydney123@insidesydney.e5fhyis.mongodb.net/InsideSydney?retryWrites=true&w=majority&appName=insideSydney"
+    `mongodb+srv://${process.env.DB_USER_NAME}:${process.env.DB_PASS}@insidesydney.e5fhyis.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=insideSydney`
 )
 .then(() => {
         console.log("Connected to DB")

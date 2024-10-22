@@ -75,7 +75,7 @@ const signUp = async(req, res, next) => {
 
     let token
     try {
-        token = await jwt.sign({userId: newUser.id, email: newUser.email},"SuperSecret", {expiresIn: '1h' })
+        token = await jwt.sign({userId: newUser.id, email: newUser.email},`${process.env.TOKEN_SECRET}`, {expiresIn: '1h' })
     } catch(error) {
         return next(new HttpError("Login : Could not register credentials, please try again later", 500))
     }
@@ -110,7 +110,7 @@ const login = async(req, res, next) => {
 
     let token;
     try {
-        token = await jwt.sign({userId: userExist.id, email: userExist.email},"SuperSecret", {expiresIn: '1h' })
+        token = await jwt.sign({userId: userExist.id, email: userExist.email},`${process.env.TOKEN_SECRET}`, {expiresIn: '1h' })
     } catch (err) {
         return next(new HttpError("Could not create JWT, Please try again later", 500))
         

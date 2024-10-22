@@ -12,7 +12,7 @@ const UserItem = props => {
           <div className="user-item__image">
             {/* Prepending URL to Convert Path to URL */}
             {/* Seems to be working when \ instead of  /  */}
-            <Avatar image={`http://localhost:4000\\` + props.image} alt={props.name} />
+            <Avatar image={`${process.env.REACT_APP_BACKEND_URL}\\` + props.image} alt={props.name} />
           </div>
           <div className="user-item__info">
             <h2>{props.name}</h2>

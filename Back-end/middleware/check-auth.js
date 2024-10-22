@@ -16,7 +16,7 @@ const checkAuth = (req,res,next) => {
             /* Will initiate catch Block */
             throw new Error()
         }
-        const decodedToken = jwt.verify(token,"SuperSecret")
+        const decodedToken = jwt.verify(token,`${process.env.TOKEN_SECRET}`)
         req.userData = {userId : decodedToken.userId}
         next()
     } catch(err) {

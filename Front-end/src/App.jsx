@@ -1,12 +1,20 @@
+import React from 'react';
 import {BrowserRouter, Route, Redirect,Switch} from 'react-router-dom'
-import NewPlaces from './Places/Pages/NewPlaces';
+// import NewPlaces from './Places/Pages/NewPlaces';
 import Users from './Users/Pages/Users';
 import MainNavigation from './Shared/Components/Navigation/MainNavigation';
-import UserPlaces from "./Places/Pages/UserPlaces"
-import UpdatePlaces from './Places/Pages/UpdatePlaces';
-import Authenticate from './Users/Pages/Authenticate';
+// import UserPlaces from "./Places/Pages/UserPlaces"
+// import UpdatePlaces from './Places/Pages/UpdatePlaces';
+// import Authenticate from './Users/Pages/Authenticate';
 import AuthContext from './Shared/Context/AuthContext';
 import useAuth from './Shared/Components/hooks/auth-hook';
+import { Suspense } from 'react';
+import LoadingSpinner from './Shared/Components/FormElements/LoadingSpinner';
+
+const UserPlaces = React.lazy(() => import("./Places/Pages/UserPlaces"))
+const NewPlaces = React.lazy(() => import('./Places/Pages/NewPlaces'))
+const UpdatePlaces = React.lazy(() => import('./Places/Pages/UpdatePlaces'))
+const Authenticate = React.lazy(() => import('./Users/Pages/Authenticate'))
 
 
 function App() {
@@ -14,7 +22,7 @@ function App() {
   let routes;
   /* 
     Protecting Routes in Front End
-   */
+  */
   if (token) {
     routes = (
       <Switch>
@@ -70,8 +78,14 @@ function App() {
       {/* Navigation bar is omnipresent throughout all routes. */}
       <MainNavigation/>
       <main>
-        {/* Protected routes, Segregated with Global Login/Logout Context */}
-        {routes}
+        <Suspense fallback = {
+          <div className='center'>
+            <LoadingSpinner/>
+          </div>
+        }>
+          {/* Protected routes, Segregated with Global Login/Logout Context */}
+          {routes}
+        </Suspense>
       </main>
       </BrowserRouter>
     </AuthContext.Provider>
