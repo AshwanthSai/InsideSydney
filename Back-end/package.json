@@ -9,6 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "module": "CommonJS",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
