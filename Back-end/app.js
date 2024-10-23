@@ -8,6 +8,7 @@ const mongo =  require("mongoose")
 const { HttpError } = require("./models/http-error")
 var cors = require('cors')
 
+const dotenv = require('dotenv').config()
 /* app.get("/", (req,res,next) => {
     res.json({"name" : "Sai"})
 }) */
