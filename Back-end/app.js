@@ -70,7 +70,7 @@ mongo.connect(
 .then(() => {
         console.log("Connected to DB")
         try {
-            app.listen(4000)
+            app.listen(process.env.PORT || 4000)
             console.log("Server Running")
         } catch(err){
             console.log(err)
