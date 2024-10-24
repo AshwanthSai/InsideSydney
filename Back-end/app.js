@@ -13,6 +13,7 @@ const dotenv = require('dotenv').config()
     res.json({"name" : "Sai"})
 }) */
 
+/* Not needed when hosting on a Single Provider */
 app.use(cors())
 app.use(express.json())
 
@@ -26,12 +27,37 @@ app.use("/uploads/images", express.static(path.join("uploads", "images")));
 app.use("/places", placesRouter)
 app.use("/users", usersRouter)
 
+/* 
+    Any route that is not an API Route, Serve out Index.HTML
+    React code will internally fix the routing.
+*/
+
+const root = path.join(__dirname, 'public')
+app.use(express.static(root));
+app.get("*", (req, res) => {
+    res.sendFile('index.html', { root });
+})
+
+
+/* 
+    This method does not work with the new version of React [V18]
+    app.use((req, res, next) => {
+        console.log("Serving Index.HTML")
+        res.sendFile(path.resolve(__dirname, "public", "index.html"), (err) => {
+            if (err) {
+                console.log(err)
+                next(err); // Pass the error to the error handling middleware
+            }
+        });
+    });
+*/
+
 /* Unsupported Route Handeller */
-app.use((req,res,next) => {
+/* app.use((req,res,next) => {
     //The below method will hang because it does not throw an error, 
     //return new HttpError("This route does not exist", 404)
     return next(new HttpError("This route does not exist", 404))
-})
+}) */
 
 /* Default Error Handler */
 app.use((err,req,res,next) => {
